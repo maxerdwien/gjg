@@ -58,7 +58,7 @@ var Game = function() {
 	var x_max = 10000;
 	var y_max = 10000;
 	for (var i = 0; i < 500; i++) {
-		this.vampires.push(new Vampire(Math.random()*x_max, Math.random()*y_max, false, true));
+		this.vampires.push(new Vampire(Math.random()*x_max, Math.random()*y_max, true, true));
 	}
 	for (var i = 0; i < 500; i++) {
 		this.glucose_pickups.push(new GlucosePickup(Math.random()*x_max, Math.random()*y_max));

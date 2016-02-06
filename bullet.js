@@ -13,7 +13,7 @@ Bullet.prototype = {
 	
 	render: function(ctx) {
 		ctx.beginPath();
-		ctx.arc(this.bb.x-this.bb.width/2-gx, this.bb.y-this.bb.height/2-gy, 8, 0, 6.29);
+		ctx.arc(this.bb.x+this.bb.width/2-gx, this.bb.y+this.bb.height/2-gy, 8, 0, 6.29);
 		ctx.fillStyle = 'red';
 		ctx.fill();
 	},

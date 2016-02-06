@@ -38,11 +38,11 @@ Vampire.prototype = {
 		if (this.aggro) {
 			pose += 5;
 		}
-		ctx.drawImage(Resource.Image.vampire, pose*32, 0, 32, 32, this.bb.x - gx - this.bb.width/2, this.bb.y - gy - this.bb.height/2, 64, 64);
+		ctx.drawImage(Resource.Image.vampire, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
 		
 		// render aggro range for playtesting
 		ctx.beginPath();
-		ctx.arc(this.bb.x-gx, this.bb.y-gy, this.aggro_radius, 0, 6.29);
+		ctx.arc(this.bb.x+this.bb.width/2-gx, this.bb.y+this.bb.height/2-gy, this.aggro_radius, 0, 6.29);
 		ctx.stroke();
 		
 		ctx.restore();
@@ -81,7 +81,7 @@ Vampire.prototype = {
 				if (this.shoot_timer > this.shoot_timer_max) {
 					this.shoot_timer -= this.shoot_timer_max;
 					var bullet_speed = 10;
-					this.bullets.push(new Bullet(this.bb.x-this.bb.width/2, this.bb.y-this.bb.height/2, bullet_speed * Math.cos(angle), bullet_speed * Math.sin(angle)));
+					this.bullets.push(new Bullet(this.bb.x, this.bb.y, bullet_speed * Math.cos(angle), bullet_speed * Math.sin(angle)));
 				}
 			}
 			
