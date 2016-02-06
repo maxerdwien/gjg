@@ -6,13 +6,14 @@ var GlucosePickup = function(x, y) {
 	
 	this.glucose_amount = 15;
 	this.health_amount = 1;
+	this.feed_amount = 40;
 }
 
 GlucosePickup.prototype = {
 	render: function(ctx) {
 		ctx.save();
 		ctx.beginPath();
-		ctx.rect(this.x, this.y, this.sidelength, this.sidelength);
+		ctx.rect(this.x-gx, this.y-gy, this.sidelength, this.sidelength);
 		ctx.fillStyle = 'brown';
 		ctx.fill();
 		ctx.restore();

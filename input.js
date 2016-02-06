@@ -30,24 +30,31 @@ Input.prototype = {
 		switch(e.keyCode) {
 			case 65: // a
 			case 37: // left
+			case 97:
 				this.inputState.left = true;
 				this.inputState.right = false;
 				break;
 			case 87: // w
 			case 38: // up
+			case 101:
 				this.inputState.up = true;
 				this.inputState.down = false;
 				break;
 			case 68: // d
 			case 39: // right
+			case 99:
 				this.inputState.right = true;
 				this.inputState.left = false;
 				break;
 			case 83: // s
 			case 40: // down
+			case 98:
 				this.inputState.down = true;
 				this.inputState.up = false;
 				break;
+				
+			case 32:
+				game.player.use_syringe();
 			
 		}
 	},
@@ -56,18 +63,22 @@ Input.prototype = {
 		switch(e.keyCode) {
 			case 65: // a
 			case 37: // left
+			case 97:
 				this.inputState.left = false;
 				break;
 			case 87: // w
 			case 38: // up
+			case 101:
 				this.inputState.up = false;
 				break;
 			case 68: // d
 			case 39: // right
+			case 99:
 				this.inputState.right = false;
 				break;
 			case 83: // s
 			case 40: // down
+			case 98:
 				this.inputState.down = false;
 				break;
 		}

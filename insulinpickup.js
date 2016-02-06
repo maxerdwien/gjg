@@ -11,7 +11,7 @@ InsulinPickup.prototype = {
 	render: function(ctx) {
 		ctx.save();
 		ctx.beginPath();
-		ctx.rect(this.x, this.y, this.sidelength, this.sidelength);
+		ctx.rect(this.x-gx, this.y-gy, this.sidelength, this.sidelength);
 		ctx.fillStyle = 'blue';
 		ctx.fill();
 		ctx.restore();
