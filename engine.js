@@ -22,7 +22,7 @@ Resource.Image.heart.src = 'Images/Heart.gif';
 Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
 Resource.Image.insulin.src = 'Images/Insulin.gif';
 Resource.Image.fastfood.src = 'Images/fastfood.gif';
-Resource.Image.vampire.src = 'Images/vampire.gif';
+Resource.Image.vampire.src = 'Images/vampire.png';
 
 
 

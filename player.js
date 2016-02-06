@@ -15,11 +15,6 @@ var Player = function() {
 	this.latent_glucose = 0;
 	this.max_absorption_per_second = 7;
 	
-	//this.glucose_move_cost = 0.05;
-	//this.glucose_idle_cost = 0.005;
-	this.glucose_move_cost = 0;
-	this.glucose_idle_cost = 0;
-	
 	this.max_timer = 5000;
 	this.timer = 0;
 	
@@ -36,13 +31,29 @@ var Player = function() {
 	this.bar_flash = this.bar_flash_max_1;
 	
 	this.alarm_bar_state = 0;
+	
+	this.current_pose = 0;
+	
+	this.walking_timer_max = 200;
+	this.walking_timer = 0;
+	
+	this.walking_step = 0;
+	
+	this.walking = false;
+	
+	this.facing_right = true;
 }
 
 Player.prototype = {
 	render: function(ctx) {
 		ctx.save();
-		ctx.drawImage(Resource.Image.samantha, 32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
-		
+		ctx.save();
+		if (!this.facing_right) {
+			ctx.translate(WIDTH, 0);
+			ctx.scale(-1, 1);
+		}
+		ctx.drawImage(Resource.Image.samantha, this.current_pose*32, 0, 32, 32, this.bb.x - gx - this.bb.width/2, this.bb.y - gy - this.bb.height/2, 64, 64);
+		ctx.restore();
 		// render glucose bar
 		{
 			var bar_x = 10;
@@ -160,6 +171,8 @@ Player.prototype = {
 		if (this.timer > 0) {
 			this.timer -= et;
 		}
+		
+		
 		// movement
 		{
 			var speed;
@@ -168,28 +181,49 @@ Player.prototype = {
 			} else {
 				speed = this.slow_speed;
 			}
+			
+			var walking = false;
 			if (game.input.inputState.up) {
 				this.bb.y -= speed;
 				gy -= speed;
-				this.glucose -= this.glucose_move_cost;
+				walking = true;
 			} else if (game.input.inputState.down) {
 				this.bb.y += speed;
 				gy += speed;
-				this.glucose -= this.glucose_move_cost;
+				walking = true;
 			}
 			
 			if (game.input.inputState.right) {
 				this.bb.x += speed;
 				gx += speed;
-				this.glucose -= this.glucose_move_cost;
+				walking = true;
+				this.facing_right = true;
 			} else if (game.input.inputState.left) {
 				this.bb.x -= speed;
 				gx -= speed;
-				this.glucose -= this.glucose_move_cost;
+				walking = true;
+				this.facing_right = false;
 			}
+			
+			this.walking = walking;
 		}
 		
-		this.glucose -= this.glucose_idle_cost;
+		if (this.walking) {
+			this.current_pose = 2 + this.walking_step;
+		} else {
+			this.current_pose = 0;
+		}
+		
+		
+		this.walking_timer += et;
+		if (this.walking_timer > this.walking_timer_max) {
+			this.walking_timer -= this.walking_timer_max;
+			if (this.walking_step == 0) {
+				this.walking_step = 1;
+			} else {
+				this.walking_step = 0;
+			}
+		}
 	},
 	
 	use_syringe: function() {
