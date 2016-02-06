@@ -76,9 +76,10 @@ Player.prototype = {
 					ctx.font = '20px Georgia';
 					ctx.fillStyle = 'black';
 					if (this.glucose < this.min_glucose) {
-						ctx.fillText('hypoglycemic!', 10, 150);
+						//ctx.fillText('hypoglycemic!', 10, 150);
+						game.textbox.write(ctx, 'hypoglycemic!', 10, 140, 24);
 					} else {
-						ctx.fillText('hyperglycemic!', 10, 150);
+						game.textbox.write(ctx, 'hyperglycemic!', 10, 140, 24);
 					}
 					ctx.fillStyle = 'red';
 				} else {

@@ -79,6 +79,8 @@ var Game = function() {
 	}
 	
 	this.textbox = new Textbox();
+	
+	this.do_darken = true;
 }
 
 Game.prototype = {
@@ -199,8 +201,6 @@ Game.prototype = {
 		}
 		
 		this.player.render(this.screenContext);
-		
-		this.textbox.write(this.screenContext, "this is some text!");
 	},
 	
 	start: function() {
@@ -222,15 +222,25 @@ Game.prototype = {
 		var elapsedTime = (time - this.lastTime);
 		this.lastTime = time;
 		
+		
+		
 		if (this.game_state == 'normal') {
 			self.update(elapsedTime);
 			self.render();
 		} else if (this.game_state == 'lost') {
-			this.screenContext.fillStyle = 'black';
-			this.screenContext.font = '50px Georgia';
-			this.screenContext.fillText('you lost.', 100, 170);
-			this.screenContext.font= '20px Georgia';
-			this.screenContext.fillText('the vampires will gnaw your corpse forever.', 100, 210);
+			
+			if (this.do_darken) {
+				this.screenContext.save();
+				this.screenContext.beginPath();
+				this.screenContext.rect(0, 0, WIDTH, HEIGHT);
+				this.screenContext.fillStyle = '#000000';
+				this.screenContext.globalAlpha = 0.5;
+				this.screenContext.fill();
+				this.screenContext.restore();
+				this.do_darken = false;
+			}
+			this.textbox.write(this.screenContext, 'you lost.', 100, 170, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 208, 24);
 		}
 		
 		window.requestAnimationFrame(
