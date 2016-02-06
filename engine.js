@@ -75,7 +75,7 @@ var Game = function() {
 	}
 	for (var i = 0; i < 500; i++) {
 		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
-		this.cGrid.add(this.glucose_pickups[i]);
+		this.cGrid.add(this.insulin_pickups[i]);
 	}
 	
 	this.textbox = new Textbox();
@@ -121,7 +121,27 @@ Game.prototype = {
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			
 			var gp = this.glucose_pickups[i];
-			if (this.player.bb.touching(gp.bb)) {
+			gp.cells.forEach( function(cell, index, arr) {
+				var stepper = cell.first.next;
+				while(stepper != 0)
+				{
+					if(stepper.data === self.player && self.player.bb.touching(gp.bb))
+					{
+						self.player.latent_glucose += gp.glucose_amount;
+						//this.player.health += gp.health_amount;
+						self.player.fed += gp.feed_amount;
+						if (self.player.fed > self.player.fed_max) {
+							self.player.fed = self.player.fed_max;
+						}
+				
+						self.glucose_pickups.splice(i, 1);
+						self.cGrid.remove(gp);
+						return;
+					}
+					stepper = stepper.next;
+				}
+			})
+			/*if (this.player.bb.touching(gp.bb)) {
 				this.player.latent_glucose += gp.glucose_amount;
 				//this.player.health += gp.health_amount;
 				this.player.fed += gp.feed_amount;
@@ -131,18 +151,33 @@ Game.prototype = {
 				
 				this.glucose_pickups.splice(i, 1);
 				i--;
-			}
+			}*/
 		}
 		
 		for (var i = 0; i < this.insulin_pickups.length; i++) {
 			
 			var ip = this.insulin_pickups[i];
-			if (this.player.bb.touching(ip.bb)) {
+			ip.cells.forEach( function(cell, index, arr) {
+				var stepper = cell.first.next;
+				while(stepper != 0)
+				{
+					if(stepper.data === self.player && self.player.bb.touching(ip.bb))
+					{
+						self.player.syringes += 1;
+				
+						self.insulin_pickups.splice(i, 1);
+						i--;
+						return;
+					}
+					stepper = stepper.next;
+				}
+			})
+			/*if (this.player.bb.touching(ip.bb)) {
 				this.player.syringes += 1;
 				
 				this.insulin_pickups.splice(i, 1);
 				i--;
-			}
+			}*/
 		}
 	},
 	

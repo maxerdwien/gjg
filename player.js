@@ -229,6 +229,7 @@ Player.prototype = {
 		gx = this.bb.x + this.bb.width/2 - WIDTH/2;
 		gy = this.bb.y + this.bb.height/2 - HEIGHT/2;
 		
+		
 		if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))
 		{
 			this.cGrid.move(this);
