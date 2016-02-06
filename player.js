@@ -231,6 +231,7 @@ Player.prototype = {
 		this.bb.x = this.clamp(this.bb.x, 0, 10000);
 		this.bb.y = this.clamp(this.bb.y, 0, 10000);
 		
+		
 		if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))
 		{
 			this.cGrid.move(this);
