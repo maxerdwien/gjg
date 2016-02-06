@@ -20,15 +20,21 @@ var Game = function() {
 	
 	// Game variables
 	
+	this.input = new Input(this.screen, window);
+	
+	this.player = new Player();
+	
 }
 
 Game.prototype = {
 	update: function(elapsedTime) {
-
+		this.player.update();
 	},
 	
 	render: function() {
 		this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
+		
+		this.player.render(this.screenContext);
 	},
 	
 	start: function() {
