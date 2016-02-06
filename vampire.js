@@ -91,7 +91,7 @@ Vampire.prototype = {
 				if (this.shoot_timer > this.shoot_timer_max) {
 					this.shoot_timer -= this.shoot_timer_max;
 					var bullet_speed = 10;
-					this.bullets.push(new Bullet(this.bb.x, this.bb.y, bullet_speed * Math.cos(angle), bullet_speed * Math.sin(angle)));
+					this.bullets.push(new Bullet(this.bb.x + this.bb.width/2, this.bb.y + this.bb.height/2, bullet_speed * Math.cos(angle), bullet_speed * Math.sin(angle)));
 				}
 			}
 			

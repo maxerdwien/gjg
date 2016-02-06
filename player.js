@@ -4,7 +4,7 @@ var Player = function(grid) {
 	this.cells = [];
 	this.cGrid = grid;
 	
-	this.healthy_speed = 10;
+	this.healthy_speed = 8.5;
 	this.slow_speed = 5;
 	
 	this.sidelength = 30;
@@ -46,10 +46,17 @@ var Player = function(grid) {
 	this.walking = false;
 	
 	this.facing_right = true;
+	
+	this.needles = [];
 }
 
 Player.prototype = {
 	render: function(ctx) {
+		
+		for (var i = 0; i < this.needles.length; i++) {
+			this.needles[i].render(ctx);
+		}
+		
 		ctx.save();
 		if (!this.facing_right) {
 			ctx.translate(WIDTH, 0);
@@ -144,6 +151,10 @@ Player.prototype = {
 	},
 	
 	update: function(et) {
+		for (var i = 0; i < this.needles.length; i++) {
+			this.needles[i].update(et);
+		}
+		
 		this.bar_flash -= et;
 		if (this.bar_flash < 0) {
 			if (this.alarm_bar_state == 0) {
@@ -196,10 +207,12 @@ Player.prototype = {
 				this.bb.lasty = this.bb.y;
 				this.bb.y -= speed;
 				walking = true;
+				this.facing_up = true;
 			} else if (game.input.inputState.down) {
 				this.bb.lasty = this.bb.y;
 				this.bb.y += speed;
 				walking = true;
+				this.facing_up = false;
 			}
 			
 			if (game.input.inputState.right) {
@@ -253,6 +266,34 @@ Player.prototype = {
 		if (this.syringes > 0) {
 			this.syringes--;
 			this.glucose -= 15;
+		}
+	},
+	
+	throw_syringe: function() {
+		if (this.syringes > 0) {
+			this.syringes--;
+			var needle_vel = 10;
+			var x_vel = 0;
+			if (game.input.inputState.right) {
+				x_vel = needle_vel;
+			} else if (game.input.inputState.left) {
+				x_vel = -needle_vel;
+			}
+			
+			var y_vel = 0;
+			if (game.input.inputState.down) {
+				y_vel = needle_vel;
+			} else if (game.input.inputState.up) {
+				y_vel = -needle_vel;
+			}
+			if (x_vel == 0 && y_vel == 0) {
+				if (this.facing_right) {
+					x_vel = needle_vel;
+				} else {
+					x_vel = -needle_vel;
+				}
+			}
+			this.needles.push(new Needle(this.bb.x + this.bb.width/2, this.bb.y + this.bb.height/2, x_vel, y_vel));
 		}
 	}
 }

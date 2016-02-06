@@ -91,7 +91,6 @@ Game.prototype = {
 		}
 		this.player.update(elapsedTime);
 		
-		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
 			var v = this.vampires[i];
@@ -116,6 +115,15 @@ Game.prototype = {
 					this.player.health -= 1;
 					v.bullets.splice(j, 1);
 					j--;
+				}
+			}
+			
+			for (var j = 0; j < this.player.needles.length; j++) {
+				if (this.player.needles[j].bb.touching(v.bb)) {
+					this.vampires.splice(i, 1);
+					i--;
+					this.player.needles.splice(j, 1);
+					break;
 				}
 			}
 		}
