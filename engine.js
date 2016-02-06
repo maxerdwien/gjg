@@ -25,23 +25,42 @@ var Game = function() {
 	this.player = new Player();
 	
 	this.glucose_pickups = [];
-	this.glucose_pickups.push(new GlucosePickup(100, 100));
+	for (var i = 0; i < 100; i++) {
+		this.glucose_pickups.push(new GlucosePickup(100*i, 100));
+	}
+	
+	this.insulin_pickups = [];
+	for (var i = 0; i < 100; i++) {
+		this.insulin_pickups.push(new InsulinPickup(100*i, 500));
+	}
 }
 
 Game.prototype = {
 	update: function(elapsedTime) {
-		this.player.update();
+		this.player.update(elapsedTime);
 		
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			
 			var gp = this.glucose_pickups[i];
-			var distance = this.player.sidelength + gp.sidelength;
+			var distance = (this.player.sidelength + gp.sidelength)/2;
 			if (Math.abs(gp.x - this.player.x) <= distance && Math.abs(gp.y - this.player.y) <= distance) {
 				this.player.glucose += gp.glucose_amount;
 				this.player.health += gp.health_amount;
 				
 				this.glucose_pickups.splice(i, 1);
+				i--;
+			}
+		}
+		
+		for (var i = 0; i < this.insulin_pickups.length; i++) {
+			
+			var ip = this.insulin_pickups[i];
+			var distance = (this.player.sidelength + ip.sidelength)/2;
+			if (Math.abs(ip.x - this.player.x) <= distance && Math.abs(ip.y - this.player.y) <= distance) {
+				this.player.glucose -= ip.insulin_amount;
+				
+				this.insulin_pickups.splice(i, 1);
 				i--;
 			}
 		}
@@ -54,6 +73,10 @@ Game.prototype = {
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			this.glucose_pickups[i].render(this.screenContext);
+		}
+		
+		for (var i = 0; i < this.insulin_pickups.length; i++) {
+			this.insulin_pickups[i].render(this.screenContext);
 		}
 		
 		this.player.render(this.screenContext);
@@ -86,7 +109,7 @@ Game.prototype = {
 				self.loop.call(self, time);
 			}
 		);
-	}
+	},
 }
 var game = new Game();
 game.start();

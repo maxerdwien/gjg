@@ -1,19 +1,18 @@
-var GlucosePickup = function(x, y) {
+var InsulinPickup = function(x, y) {
 	this.x = x;
 	this.y = y;
 	
 	this.sidelength = 10;
 	
-	this.glucose_amount = 15;
-	this.health_amount = 1;
+	this.insulin_amount = 10;
 }
 
-GlucosePickup.prototype = {
+InsulinPickup.prototype = {
 	render: function(ctx) {
 		ctx.save();
 		ctx.beginPath();
 		ctx.rect(this.x, this.y, this.sidelength, this.sidelength);
-		ctx.fillStyle = 'brown';
+		ctx.fillStyle = 'blue';
 		ctx.fill();
 		ctx.restore();
 	},
