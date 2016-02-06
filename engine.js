@@ -24,15 +24,37 @@ var Game = function() {
 	
 	this.player = new Player();
 	
+	this.glucose_pickups = [];
+	this.glucose_pickups.push(new GlucosePickup(100, 100));
 }
 
 Game.prototype = {
 	update: function(elapsedTime) {
 		this.player.update();
+		
+		
+		for (var i = 0; i < this.glucose_pickups.length; i++) {
+			
+			var gp = this.glucose_pickups[i];
+			var distance = this.player.sidelength + gp.sidelength;
+			if (Math.abs(gp.x - this.player.x) <= distance && Math.abs(gp.y - this.player.y) <= distance) {
+				this.player.glucose += gp.glucose_amount;
+				this.player.health += gp.health_amount;
+				
+				this.glucose_pickups.splice(i, 1);
+				i--;
+			}
+		}
 	},
 	
 	render: function() {
 		this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
+		
+		
+		
+		for (var i = 0; i < this.glucose_pickups.length; i++) {
+			this.glucose_pickups[i].render(this.screenContext);
+		}
 		
 		this.player.render(this.screenContext);
 	},
