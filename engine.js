@@ -2,6 +2,15 @@
 var WIDTH;
 var HEIGHT;
 
+// Resources
+Resource = {
+	Image: {
+		heart: new Image(),
+	},
+}
+
+Resource.Image.heart.src = "Images/Heart.gif";
+
 var Game = function() {
 	var self = this;
 	

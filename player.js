@@ -19,6 +19,7 @@ var Player = function() {
 	this.timer = 0;
 	
 	this.health = 5;
+	this.healthimg = Resource.Image.heart;
 }
 
 Player.prototype = {
@@ -31,16 +32,16 @@ Player.prototype = {
 		ctx.fill();
 		ctx.stroke();
 		ctx.restore();
-		
 		// render health
 		var health_x = 10;
 		var health_y = 50;
 		for (var i = 0; i < this.health; i++) {
-			ctx.beginPath();
 			var heart_size = 30;
-			ctx.rect(health_x + i*(heart_size+10), health_y, heart_size, heart_size);
-			ctx.fill();
-			ctx.stroke();
+			ctx.drawImage(this.healthimg, health_x + i*(heart_size+10), health_y);
+			//ctx.beginPath();
+			//ctx.rect(health_x + i*(heart_size+10), health_y, heart_size, heart_size);
+			//ctx.fill();
+			//ctx.stroke();
 		}
 		
 		// render glucose bar
