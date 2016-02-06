@@ -41,7 +41,7 @@ var Player = function() {
 Player.prototype = {
 	render: function(ctx) {
 		ctx.save();
-		ctx.drawImage(Resource.Image.samantha, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		ctx.drawImage(Resource.Image.samantha, 32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
 		
 		// render glucose bar
 		{

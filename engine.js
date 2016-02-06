@@ -17,7 +17,7 @@ Resource = {
 	},
 }
 
-Resource.Image.samantha.src = 'Images/Samantha.gif';
+Resource.Image.samantha.src = 'Images/Samantha.png';
 Resource.Image.heart.src = 'Images/Heart.gif';
 Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
 Resource.Image.insulin.src = 'Images/Insulin.gif';
