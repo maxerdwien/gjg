@@ -1,6 +1,8 @@
-var Vampire = function(x, y) {
+var Vampire = function(x, y, grid) {
 	
-	this.bb = new BoundingBox(x, y, 64, 64);
+	this.bb = new BoundingBox(x, y, 30, 30);
+	this.cells = [];
+	this.cGrid = grid;
 	
 	this.speed = 3;
 	
@@ -14,11 +16,14 @@ var Vampire = function(x, y) {
 Vampire.prototype = {
 	render: function(ctx) {
 		ctx.save();
-		ctx.drawImage(Resource.Image.vampire, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		ctx.beginPath();
+		ctx.rect(this.bb.x - gx, this.bb.y - gy, this.bb.width, this.bb.height);
+		ctx.fillStyle = 'purple';
+		ctx.fill();
 		
 		// render aggro range for playtesting
 		ctx.beginPath();
-		ctx.arc(this.bb.x-gx, this.bb.y-gy, this.aggro_radius, 0, 6.29);
+		ctx.arc(this.x-gx, this.y-gy, this.aggro_radius, 0, 6.29);
 		ctx.stroke();
 		
 		ctx.restore();
@@ -37,8 +42,14 @@ Vampire.prototype = {
 			var x_vel = this.speed * Math.cos(angle);
 			var y_vel = this.speed * Math.sin(angle);
 			
+			this.bb.lastx = this.x;
+			this.bb.lasty = this.y;
 			this.bb.x += x_vel;
 			this.bb.y += y_vel;
+			if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))
+			{
+				this.cGrid.move(this);
+			}	
 		}
 
 	},

@@ -8,22 +8,11 @@ var gy = 0;
 // Resources
 Resource = {
 	Image: {
-		samantha: new Image(),
 		heart: new Image(),
-		empty_heart: new Image(),
-		insulin: new Image(),
-		fastfood: new Image(),
-		vampire: new Image(),
 	},
 }
 
-Resource.Image.samantha.src = 'Images/Samantha.gif';
-Resource.Image.heart.src = 'Images/Heart.gif';
-Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
-Resource.Image.insulin.src = 'Images/Insulin.gif';
-Resource.Image.fastfood.src = 'Images/fastfood.gif';
-Resource.Image.vampire.src = 'Images/vampire.gif';
-
+Resource.Image.heart.src = "Images/Heart.gif";
 
 
 var Game = function() {
@@ -42,47 +31,74 @@ var Game = function() {
 	WIDTH = this.screen.width;
 	HEIGHT = this.screen.height;
 	
+	
 	// Game variables
 	this.game_state = 'normal';
 	
-	this.input = new Input(this.screen, window);
-	
-	this.player = new Player();
-	
-	this.vampires = [];
-	
-	this.glucose_pickups = [];
-	
-	this.insulin_pickups = [];
-	
 	var x_max = 10000;
 	var y_max = 10000;
+	
+	this.input = new Input(this.screen, window);
+	
+	this.cGrid = new CollisionGrid(x_max, y_max, 32);
+	
+	this.player = new Player(this.cGrid);
+	this.cGrid.add(this.player);
+	
+	this.vampires = [];
+	//this.vampires.push(new Vampire(200, 200));
+	
+	this.glucose_pickups = [];
+	//for (var i = 0; i < 100; i++) {
+	//	this.glucose_pickups.push(new GlucosePickup(100*i, 100));
+	//}
+	
+	this.insulin_pickups = [];
+	//for (var i = 0; i < 100; i++) {
+	//	this.insulin_pickups.push(new InsulinPickup(100*i, 500));
+	//}
+	
 	for (var i = 0; i < 500; i++) {
-		this.vampires.push(new Vampire(Math.random()*x_max, Math.random()*y_max));
+		this.vampires.push(new Vampire(Math.random()*(x_max-30), Math.random()*(y_max-30), this.cGrid));
+		this.cGrid.add(this.vampires[i]);
 	}
 	for (var i = 0; i < 500; i++) {
-		this.glucose_pickups.push(new GlucosePickup(Math.random()*x_max, Math.random()*y_max));
+		this.glucose_pickups.push(new GlucosePickup(Math.random()*(x_max-10), Math.random()*(y_max-10)));
+		this.cGrid.add(this.glucose_pickups[i]);
 	}
 	for (var i = 0; i < 500; i++) {
-		this.insulin_pickups.push(new InsulinPickup(Math.random()*x_max, Math.random()*y_max));
+		this.insulin_pickups.push(new InsulinPickup(Math.random()*(x_max-10), Math.random()*(y_max-10)));
+		this.cGrid.add(this.glucose_pickups[i]);
 	}
 }
 
 Game.prototype = {
 	update: function(elapsedTime) {
+		self = this;
+		if (this.player.health <= 0) {
+			this.game_state = 'lost';
+		}
 		this.player.update(elapsedTime);
-		
 		
 		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
 			var v = this.vampires[i];
-			if (this.player.bb.touching(v.bb)) {
-				this.player.health -= 1;
-				this.player.glucose -= v.glucose_amount;
-				this.vampires.splice(i, 1);
-				i--;
-			}
+			v.cells.forEach( function(cell, index, arr) {
+				var stepper = cell.first.next;
+				while(stepper != 0)
+				{
+					if(stepper.data === self.player && self.player.bb.touching(v.bb))
+					{
+						self.player.health -= 1;
+						self.player.glucose -= v.glucose_amount;
+						self.vampires.splice(i, 1);
+						self.cGrid.remove(v);
+						return;
+					}
+					stepper = stepper.next;
+				}
+			})
 		}
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
@@ -111,14 +127,12 @@ Game.prototype = {
 				i--;
 			}
 		}
-		
-		if (this.player.health <= 0) {
-			this.game_state = 'lost';
-		}
 	},
 	
 	render: function() {
 		this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
+		
+		this.cGrid.render();
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			this.glucose_pickups[i].render(this.screenContext);
@@ -162,7 +176,7 @@ Game.prototype = {
 			this.screenContext.font = '50px Georgia';
 			this.screenContext.fillText('you lost.', 100, 170);
 			this.screenContext.font= '20px Georgia';
-			this.screenContext.fillText('the vampires will gnaw your corpse forever.', 100, 210);
+			this.screenContext.fillText('the vampires will knaw your corpse forever.', 100, 210);
 		}
 		
 		window.requestAnimationFrame(

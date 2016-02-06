@@ -3,6 +3,8 @@ var BoundingBox = function(x, y, width, height)
 {
 	this.x = x;
 	this.y = y;
+	this.lastx = 0;
+	this.lasty = 0;
 	this.width = width;
 	this.height = height;
 }
@@ -42,7 +44,7 @@ LList.prototype = {
 	add: function(data)
 	{
 		stepper = this.first;
-		while(stepper != 0)
+		while(stepper.next != 0)
 		{
 			if(stepper.data === data)
 			{
@@ -50,7 +52,7 @@ LList.prototype = {
 			}
 			stepper = stepper.next;
 		}
-		this.first.next = new LLCell(data, this.first.next, this);
+		stepper.next = new LLCell(data, 0, this);
 		this.count++;
 	},
 	
@@ -87,8 +89,8 @@ LList.prototype = {
 
 var CollisionGrid = function(width, height, granularity)
 {
-	this.width = Math.floor(WIDTH/granularity);
-	this.height = Math.ceil(HEIGHT/granularity);
+	this.width = Math.ceil(width/granularity);
+	this.height = Math.ceil(height/granularity);
 	this.granularity = granularity;
 	this.cells = [];
 	
@@ -104,22 +106,33 @@ var CollisionGrid = function(width, height, granularity)
 
 CollisionGrid.prototype = {
 
-	add: function(asteroid)
+	add: function(object)
 	{
-		asteroid.arrx = Math.floor(asteroid.x / this.width);
-		asteroid.arry = Math.floor(asteroid.y / this.height);
-		var arrPos = (asteroid.arry * this.width) + asteroid.arrx;
-		this.cells[arrPos].add(asteroid);
+		var min = object.bb.min();
+		var max = object.bb.max();
+		for(i = Math.floor(min.x/this.width); i <= Math.floor(max.x/this.width); i++)
+		{
+			for(j = Math.floor(min.y/this.height); j <= Math.floor(max.y/this.height); j++)
+			{
+				this.cells[i][j].add(object);
+				object.cells.push(this.cells[i][j]);
+			}
+		}
 	},
 	
-	remove: function(asteroid, x, y)
+	remove: function(object)
 	{
-		var arrPos = (y * this.width) + x;
-		this.cells[arrPos].remove(asteroid);
+		while(object.cells.length > 0)
+		{
+			var cell = object.cells.pop();
+			cell.remove(object);
+		}
 	},
 	
-	move: function(asteroid)
+	move: function(object)
 	{
+		this.remove(object);
+		this.add(object);
 	},
 	
 	checkIfClose: function()
@@ -142,7 +155,7 @@ CollisionGrid.prototype = {
 				var y = i / this.width;
 				var x = i % this.width;
 				context.rect(x * this.width, y * this.height, this.width, this.height);
-				context.fillStyle = "rgba(255,0,0,.01)";
+				context.fillStyle = "rgba(255,0,0,.1)";
 				context.fill();
 			}
 		}
