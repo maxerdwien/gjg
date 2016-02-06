@@ -58,7 +58,7 @@ var Game = function() {
 	var x_max = 10000;
 	var y_max = 10000;
 	for (var i = 0; i < 500; i++) {
-		this.vampires.push(new Vampire(Math.random()*x_max, Math.random()*y_max));
+		this.vampires.push(new Vampire(Math.random()*x_max, Math.random()*y_max, false, true));
 	}
 	for (var i = 0; i < 500; i++) {
 		this.glucose_pickups.push(new GlucosePickup(Math.random()*x_max, Math.random()*y_max));
@@ -77,6 +77,14 @@ Game.prototype = {
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
 			var v = this.vampires[i];
+			for (var j = 0; j < v.bullets.length; j++) {
+				var b = v.bullets[j];
+				if (this.player.bb.touching(b.bb)) {
+					this.player.health -= 1;
+					v.bullets.splice(j, 1);
+					j--;
+				}
+			}
 			if (this.player.bb.touching(v.bb)) {
 				this.player.health -= 1;
 				this.player.glucose -= v.glucose_amount;
@@ -94,7 +102,7 @@ Game.prototype = {
 				this.player.fed += gp.feed_amount;
 				if (this.player.fed > this.player.fed_max) {
 					this.player.fed = this.player.fed_max;
-			}
+				}
 				
 				this.glucose_pickups.splice(i, 1);
 				i--;
