@@ -10,11 +10,6 @@ var GlucosePickup = function(x, y) {
 
 GlucosePickup.prototype = {
 	render: function(ctx) {
-		ctx.save();
-		ctx.beginPath();
-		ctx.rect(this.bb.x - gx, this.bb.y - gy, this.bb.width, this.bb.height);
-		ctx.fillStyle = 'brown';
-		ctx.fill();
-		ctx.restore();
+		ctx.drawImage(Resource.Image.fastfood, this.bb.x - this.bb.width/2 - gx, this.bb.y - this.bb.height/2 - gy, 64, 64);
 	},
 }

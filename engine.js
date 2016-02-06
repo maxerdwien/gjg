@@ -9,10 +9,21 @@ var gy = 0;
 Resource = {
 	Image: {
 		heart: new Image(),
+		samantha: new Image(),
+		empty_heart: new Image(),
+		insulin: new Image(),
+		fastfood: new Image(),
+		vampire: new Image(),
 	},
 }
 
-Resource.Image.heart.src = "Images/Heart.gif";
+Resource.Image.samantha.src = 'Images/Samantha.png';
+Resource.Image.heart.src = 'Images/Heart.gif';
+Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
+Resource.Image.insulin.src = 'Images/Insulin.gif';
+Resource.Image.fastfood.src = 'Images/fastfood.gif';
+Resource.Image.vampire.src = 'Images/vampire.png';
+
 
 
 var Game = function() {
@@ -59,7 +70,7 @@ var Game = function() {
 	//}
 	
 	for (var i = 0; i < 500; i++) {
-		this.vampires.push(new Vampire(Math.random()*(x_max-30), Math.random()*(y_max-30), this.cGrid));
+		this.vampires.push(new Vampire(Math.random()*(x_max-30), Math.random()*(y_max-30), this.cGrid, Math.random() * 2, Math.random() * 2));
 		this.cGrid.add(this.vampires[i]);
 	}
 	for (var i = 0; i < 500; i++) {
@@ -99,6 +110,14 @@ Game.prototype = {
 					stepper = stepper.next;
 				}
 			})
+			for (var j = 0; j < v.bullets.length; j++) {
+				var b = v.bullets[j];
+				if (this.player.bb.touching(b.bb)) {
+					this.player.health -= 1;
+					v.bullets.splice(j, 1);
+					j--;
+				}
+			}
 		}
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
@@ -110,7 +129,7 @@ Game.prototype = {
 				this.player.fed += gp.feed_amount;
 				if (this.player.fed > this.player.fed_max) {
 					this.player.fed = this.player.fed_max;
-			}
+				}
 				
 				this.glucose_pickups.splice(i, 1);
 				i--;
