@@ -24,6 +24,9 @@ var Game = function() {
 	
 	this.player = new Player();
 	
+	this.vampires = [];
+	this.vampires.push(new Vampire(200, 200));
+	
 	this.glucose_pickups = [];
 	for (var i = 0; i < 100; i++) {
 		this.glucose_pickups.push(new GlucosePickup(100*i, 100));
@@ -38,6 +41,18 @@ var Game = function() {
 Game.prototype = {
 	update: function(elapsedTime) {
 		this.player.update(elapsedTime);
+		
+		for (var i = 0; i < this.vampires.length; i++) {
+			this.vampires[i].update(elapsedTime);
+			var v = this.vampires[i];
+			var distance = (this.player.sidelength + v.sidelength)/2;
+			if (Math.abs(v.x - this.player.x) <= distance && Math.abs(v.y - this.player.y) <= distance) {
+				this.player.health -= 1;
+				
+				this.vampires.splice(i, 1);
+				i--;
+			}
+		}
 		
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
@@ -77,6 +92,10 @@ Game.prototype = {
 		
 		for (var i = 0; i < this.insulin_pickups.length; i++) {
 			this.insulin_pickups[i].render(this.screenContext);
+		}
+		
+		for (var i = 0; i < this.vampires.length; i++) {
+			this.vampires[i].render(this.screenContext);
 		}
 		
 		this.player.render(this.screenContext);
