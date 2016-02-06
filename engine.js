@@ -195,7 +195,7 @@ Game.prototype = {
 			this.screenContext.font = '50px Georgia';
 			this.screenContext.fillText('you lost.', 100, 170);
 			this.screenContext.font= '20px Georgia';
-			this.screenContext.fillText('the vampires will knaw your corpse forever.', 100, 210);
+			this.screenContext.fillText('the vampires will gnaw your corpse forever.', 100, 210);
 		}
 		
 		window.requestAnimationFrame(
