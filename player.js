@@ -35,6 +35,8 @@ var Player = function() {
 	this.bar_flash = 0;
 	
 	this.alarm_bar_color = 'red';
+	
+	this.healthimg = Resource.Image.heart;
 }
 
 Player.prototype = {
@@ -47,17 +49,17 @@ Player.prototype = {
 		ctx.fill();
 		ctx.stroke();
 		ctx.restore();
-		
 		// render health
 		var health_x = 10;
 		var health_y = 50;
 		var heart_size = 30;
 		for (var i = 0; i < this.health; i++) {
-			ctx.beginPath();
-			ctx.rect(health_x + i*(heart_size+10), health_y, heart_size, heart_size);
-			ctx.fillStyle = 'red';
-			ctx.fill();
-			ctx.stroke();
+			var heart_size = 30;
+			ctx.drawImage(this.healthimg, health_x + i*(heart_size+10), health_y);
+			//ctx.beginPath();
+			//ctx.rect(health_x + i*(heart_size+10), health_y, heart_size, heart_size);
+			//ctx.fill();
+			//ctx.stroke();
 		}
 		// and syringes
 		for (var i = 0; i < this.syringes; i++) {
