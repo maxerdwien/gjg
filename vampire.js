@@ -1,6 +1,6 @@
 var Vampire = function(x, y) {
 	
-	this.bb = new BoundingBox(x, y, 30, 30);
+	this.bb = new BoundingBox(x, y, 64, 64);
 	
 	this.speed = 3;
 	
@@ -14,14 +14,11 @@ var Vampire = function(x, y) {
 Vampire.prototype = {
 	render: function(ctx) {
 		ctx.save();
-		ctx.beginPath();
-		ctx.rect(this.bb.x - gx, this.bb.y - gy, this.bb.width, this.bb.height);
-		ctx.fillStyle = 'purple';
-		ctx.fill();
+		ctx.drawImage(Resource.Image.vampire, this.bb.x - gx, this.bb.y - gy, 64, 64);
 		
 		// render aggro range for playtesting
 		ctx.beginPath();
-		ctx.arc(this.x-gx, this.y-gy, this.aggro_radius, 0, 6.29);
+		ctx.arc(this.bb.x-gx, this.bb.y-gy, this.aggro_radius, 0, 6.29);
 		ctx.stroke();
 		
 		ctx.restore();

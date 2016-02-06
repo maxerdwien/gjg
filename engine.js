@@ -8,11 +8,21 @@ var gy = 0;
 // Resources
 Resource = {
 	Image: {
+		samantha: new Image(),
 		heart: new Image(),
+		empty_heart: new Image(),
+		insulin: new Image(),
+		fastfood: new Image(),
+		vampire: new Image(),
 	},
 }
 
-Resource.Image.heart.src = "Images/Heart.gif";
+Resource.Image.samantha.src = 'Images/Samantha.gif';
+Resource.Image.heart.src = 'Images/Heart.gif';
+Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
+Resource.Image.insulin.src = 'Images/Insulin.gif';
+Resource.Image.fastfood.src = 'Images/fastfood.gif';
+Resource.Image.vampire.src = 'Images/vampire.gif';
 
 // Collision Detection Stuff
 var BoundingBox = function(x, y, width, height)
@@ -190,17 +200,11 @@ var Game = function() {
 	this.player = new Player();
 	
 	this.vampires = [];
-	//this.vampires.push(new Vampire(200, 200));
 	
 	this.glucose_pickups = [];
-	//for (var i = 0; i < 100; i++) {
-	//	this.glucose_pickups.push(new GlucosePickup(100*i, 100));
-	//}
 	
 	this.insulin_pickups = [];
-	//for (var i = 0; i < 100; i++) {
-	//	this.insulin_pickups.push(new InsulinPickup(100*i, 500));
-	//}
+	
 	var x_max = 10000;
 	var y_max = 10000;
 	for (var i = 0; i < 500; i++) {
