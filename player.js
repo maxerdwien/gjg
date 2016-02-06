@@ -1,6 +1,8 @@
-var Player = function() {
+var Player = function(grid) {
 
 	this.bb = new BoundingBox(WIDTH/2, HEIGHT/2, 64, 64);
+	this.cells = [];
+	this.cGrid = grid;
 	
 	this.healthy_speed = 10;
 	this.slow_speed = 5;
@@ -26,10 +28,13 @@ var Player = function() {
 	
 	this.syringes = 0;
 	
-	this.bar_flash_max_1 = 1200;
-	this.bar_flash_max_2 = 500;
-	this.bar_flash = this.bar_flash_max_1;
+	this.bar_flash_max = 500;
+	this.bar_flash = 0;
 	
+	this.alarm_bar_color = 'red';
+	
+	this.healthimg = Resource.Image.heart;
+
 	this.alarm_bar_state = 0;
 	
 	this.current_pose = 0;
@@ -47,6 +52,39 @@ var Player = function() {
 Player.prototype = {
 	render: function(ctx) {
 		ctx.save();
+
+		// render health
+		var health_x = 10;
+		var health_y = 50;
+		var heart_size = 30;
+		for (var i = 0; i < this.health; i++) {
+			var heart_size = 30;
+			ctx.drawImage(this.healthimg, health_x + i*(heart_size+10), health_y);
+			//ctx.beginPath();
+			//ctx.rect(health_x + i*(heart_size+10), health_y, heart_size, heart_size);
+			//ctx.fill();
+			//ctx.stroke();
+		}
+		// and syringes
+		for (var i = 0; i < this.syringes; i++) {
+			ctx.beginPath();
+			ctx.rect(health_x + (i+this.health)*(heart_size+10), health_y, heart_size, heart_size);
+			ctx.fillStyle = 'blue';
+			ctx.fill();
+			ctx.stroke();
+		}
+		
+		// render fed bar
+		ctx.clearRect(10, 90, this.fed_max*4, 30);
+		ctx.beginPath();
+		ctx.rect(10, 90, this.fed*4, 30);
+		ctx.fillStyle = 'purple';
+		ctx.fill();
+		ctx.beginPath();
+		ctx.rect(10, 90, this.fed_max*4, 30);
+		ctx.stroke();
+		
+
 		ctx.save();
 		if (!this.facing_right) {
 			ctx.translate(WIDTH, 0);
@@ -54,6 +92,7 @@ Player.prototype = {
 		}
 		ctx.drawImage(Resource.Image.samantha, this.current_pose*32, 0, 32, 32, this.bb.x - gx - this.bb.width/2, this.bb.y - gy - this.bb.height/2, 64, 64);
 		ctx.restore();
+
 		// render glucose bar
 		{
 			var bar_x = 10;
@@ -67,24 +106,14 @@ Player.prototype = {
 			ctx.stroke();
 			
 			// current amount
+			ctx.save();
+			ctx.beginPath();
+			ctx.rect(bar_x, bar_y, this.glucose*4, bar_height);
 			if (this.glucose > this.max_glucose || this.glucose < this.min_glucose) {
-				if (this.alarm_bar_state == 0) {
-					ctx.font = '20px Georgia';
-					ctx.fillStyle = 'black';
-					if (this.glucose < this.min_glucose) {
-						ctx.fillText('hypoglycemic!', 10, 150);
-					} else {
-						ctx.fillText('hyperglycemic!', 10, 150);
-					}
-					ctx.fillStyle = 'red';
-				} else {
-					ctx.fillStyle = 'green';
-				}
+				ctx.fillStyle = this.alarm_bar_color;
 			} else {
 				ctx.fillStyle = 'green';
 			}
-			ctx.beginPath();
-			ctx.rect(bar_x, bar_y, this.glucose*4, bar_height);
 			ctx.fill();
 			
 			// min level
@@ -99,58 +128,31 @@ Player.prototype = {
 			ctx.rect(bar_x + this.max_glucose*4 - warning_bar_width/2, bar_y, warning_bar_width, bar_height);
 			ctx.fillStyle = 'orange';
 			ctx.fill();
+			ctx.restore();
 		}
-		
-		// render fed bar
-		{
-			var bar_x = 10;
-			var bar_y = 50;
-			var bar_height = 30;
-			ctx.clearRect(bar_x, bar_y, this.fed_max*4, bar_height);
-			ctx.beginPath();
-			ctx.rect(bar_x, bar_y, this.fed*4, 30);
-			ctx.fillStyle = 'purple';
-			ctx.fill();
-			ctx.beginPath();
-			ctx.rect(bar_x, bar_y, this.fed_max*4, 30);
-			ctx.stroke();
-		}
-		
-		// render health
-		{
-			var health_x = 10;
-			var health_y = 90;
-			var heart_size = 30;
-			for (var i = 0; i < this.health; i++) {
-				var heart_size = 30;
-				ctx.drawImage(Resource.Image.heart, health_x + i*(heart_size+10), health_y);
-			}
-			// and syringes
-			for (var i = 0; i < this.syringes; i++) {
-				ctx.drawImage(Resource.Image.insulin, health_x + (i+this.health)*(heart_size+10), health_y);
-			}
-		}
-		
-		ctx.restore();
+	},
+	
+	clamp: function(value, min, max){
+		if(value <= min) return min;
+		if(value >= max) return max;
+		return value;
 	},
 	
 	update: function(et) {
 		this.bar_flash -= et;
 		if (this.bar_flash < 0) {
-			if (this.alarm_bar_state == 0) {
-				this.bar_flash += this.bar_flash_max_2;
-			} else {
-				this.bar_flash += this.bar_flash_max_1;
+			this.bar_flash += this.bar_flash_max;
+			if (this.alarm_bar_color == 'red') {
+				this.alarm_bar_color = 'green';
+			} else if (this.alarm_bar_color == 'green') {
+				this.alarm_bar_color = 'red';
 			}
-			this.alarm_bar_state = (this.alarm_bar_state+1)%2;
 		}
 		
 		this.fed -= 0.1;
 		if (this.fed <= 0) {
+			this.fed = this.fed_reset_level;
 			this.health--;
-			if (this.health > 0) {
-				this.fed = this.fed_reset_level;
-			}
 		}
 		if (this.latent_glucose > 0) {
 			var abs = this.max_absorption_per_second * (et/1000);
@@ -184,21 +186,25 @@ Player.prototype = {
 			
 			var walking = false;
 			if (game.input.inputState.up) {
+				this.bb.lasty = this.y;
 				this.bb.y -= speed;
 				gy -= speed;
 				walking = true;
 			} else if (game.input.inputState.down) {
+				this.bb.lasty = this.y;
 				this.bb.y += speed;
 				gy += speed;
 				walking = true;
 			}
 			
 			if (game.input.inputState.right) {
+				this.bb.lastx = this.x;
 				this.bb.x += speed;
 				gx += speed;
 				walking = true;
 				this.facing_right = true;
 			} else if (game.input.inputState.left) {
+				this.bb.lastx = this.x;
 				this.bb.x -= speed;
 				gx -= speed;
 				walking = true;
@@ -214,6 +220,18 @@ Player.prototype = {
 			this.current_pose = 0;
 		}
 		
+		//stop the player from going out of bounds, yes I know I'm using magic numbers
+		//fite me.
+		this.bb.x = this.clamp(this.bb.x, 0, 10000);
+		this.bb.y = this.clamp(this.bb.y, 0, 10000);
+		
+		if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))
+		{
+			this.cGrid.move(this);
+		}
+		
+		this.glucose -= this.glucose_idle_cost;
+
 		
 		this.walking_timer += et;
 		if (this.walking_timer > this.walking_timer_max) {
@@ -224,6 +242,7 @@ Player.prototype = {
 				this.walking_step = 0;
 			}
 		}
+
 	},
 	
 	use_syringe: function() {

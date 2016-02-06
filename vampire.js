@@ -1,6 +1,8 @@
-var Vampire = function(x, y, can_shoot, can_charge) {
+var Vampire = function(x, y, grid, can_shoot, can_charge) {
 	
-	this.bb = new BoundingBox(x, y, 64, 64);
+	this.bb = new BoundingBox(x, y, 30, 30);
+	this.cells = [];
+	this.cGrid = grid;
 	
 	this.normal_speed = 3;
 	this.charge_speed = 6;
@@ -34,6 +36,7 @@ var Vampire = function(x, y, can_shoot, can_charge) {
 Vampire.prototype = {
 	render: function(ctx) {
 		ctx.save();
+
 		var pose = this.current_pose;
 		if (this.aggro) {
 			pose += 5;
@@ -72,8 +75,15 @@ Vampire.prototype = {
 			var x_vel = this.speed * Math.cos(angle);
 			var y_vel = this.speed * Math.sin(angle);
 			
+			this.bb.lastx = this.x;
+			this.bb.lasty = this.y;
 			this.bb.x += x_vel;
 			this.bb.y += y_vel;
+
+			if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))
+			{
+				this.cGrid.move(this);
+			}	
 			
 			// shoot
 			if (this.can_shoot) {
@@ -101,6 +111,7 @@ Vampire.prototype = {
 		
 		for (var i = 0; i < this.bullets.length; i++) {
 			this.bullets[i].update(et);
+
 		}
 	},
 }

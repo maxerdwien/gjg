@@ -1,6 +1,7 @@
 var InsulinPickup = function(x, y) {
 	
-	this.bb = new BoundingBox(x, y, 64, 64);
+	this.bb = new BoundingBox(x, y, 10, 10);
+	this.cells = []
 	
 	this.insulin_amount = 10;
 }
