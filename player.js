@@ -1,6 +1,6 @@
 var Player = function() {
-	this.x = WIDTH/2;
-	this.y = HEIGHT/2;
+
+	this.bb = new BoundingBox(WIDTH/2, HEIGHT/2, 30, 30);
 	
 	this.healthy_speed = 10;
 	this.slow_speed = 5;
@@ -26,7 +26,7 @@ Player.prototype = {
 	render: function(ctx) {
 		ctx.save();
 		ctx.beginPath();
-		ctx.rect(this.x, this.y, this.sidelength, this.sidelength);
+		ctx.rect(this.bb.x, this.bb.y, this.sidelength, this.sidelength);
 		ctx.fillStyle = 'red';
 		
 		ctx.fill();
@@ -96,18 +96,18 @@ Player.prototype = {
 				speed = this.slow_speed;
 			}
 			if (game.input.inputState.up) {
-				this.y -= speed;
+				this.bb.y -= speed;
 				this.glucose -= this.glucose_move_cost;
 			} else if (game.input.inputState.down) {
-				this.y += speed;
+				this.bb.y += speed;
 				this.glucose -= this.glucose_move_cost;
 			}
 			
 			if (game.input.inputState.right) {
-				this.x += speed;
+				this.bb.x += speed;
 				this.glucose -= this.glucose_move_cost;
 			} else if (game.input.inputState.left) {
-				this.x -= speed;
+				this.bb.x -= speed;
 				this.glucose -= this.glucose_move_cost;
 			}
 		}
