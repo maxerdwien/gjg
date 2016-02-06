@@ -31,10 +31,11 @@ var Player = function() {
 	
 	this.syringes = 0;
 	
-	this.bar_flash_max = 500;
-	this.bar_flash = 0;
+	this.bar_flash_max_1 = 1200;
+	this.bar_flash_max_2 = 500;
+	this.bar_flash = this.bar_flash_max_1;
 	
-	this.alarm_bar_color = 'red';
+	this.alarm_bar_state = 0;
 	
 	this.healthimg = Resource.Image.heart;
 }
@@ -94,13 +95,24 @@ Player.prototype = {
 			
 			// current amount
 			ctx.save();
-			ctx.beginPath();
-			ctx.rect(bar_x, bar_y, this.glucose*4, bar_height);
 			if (this.glucose > this.max_glucose || this.glucose < this.min_glucose) {
-				ctx.fillStyle = this.alarm_bar_color;
+				if (this.alarm_bar_state == 0) {
+					ctx.font = '20px Georgia';
+					ctx.fillStyle = 'black';
+					if (this.glucose < this.min_glucose) {
+						ctx.fillText('hypoglycemic!', 10, 150);
+					} else {
+						ctx.fillText('hyperglycemic!', 10, 150);
+					}
+					ctx.fillStyle = 'red';
+				} else {
+					ctx.fillStyle = 'green';
+				}
 			} else {
 				ctx.fillStyle = 'green';
 			}
+			ctx.beginPath();
+			ctx.rect(bar_x, bar_y, this.glucose*4, bar_height);
 			ctx.fill();
 			
 			// min level
@@ -122,18 +134,20 @@ Player.prototype = {
 	update: function(et) {
 		this.bar_flash -= et;
 		if (this.bar_flash < 0) {
-			this.bar_flash += this.bar_flash_max;
-			if (this.alarm_bar_color == 'red') {
-				this.alarm_bar_color = 'green';
-			} else if (this.alarm_bar_color == 'green') {
-				this.alarm_bar_color = 'red';
+			if (this.alarm_bar_state == 0) {
+				this.bar_flash += this.bar_flash_max_2;
+			} else {
+				this.bar_flash += this.bar_flash_max_1;
 			}
+			this.alarm_bar_state = (this.alarm_bar_state+1)%2;
 		}
 		
 		this.fed -= 0.1;
 		if (this.fed <= 0) {
-			this.fed = this.fed_reset_level;
 			this.health--;
+			if (this.health > 0) {
+				this.fed = this.fed_reset_level;
+			}
 		}
 		if (this.latent_glucose > 0) {
 			var abs = this.max_absorption_per_second * (et/1000);

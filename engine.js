@@ -216,10 +216,9 @@ var Game = function() {
 
 Game.prototype = {
 	update: function(elapsedTime) {
-		if (this.player.health <= 0) {
-			this.game_state = 'lost';
-		}
 		this.player.update(elapsedTime);
+		
+		
 		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
@@ -257,6 +256,10 @@ Game.prototype = {
 				this.insulin_pickups.splice(i, 1);
 				i--;
 			}
+		}
+		
+		if (this.player.health <= 0) {
+			this.game_state = 'lost';
 		}
 	},
 	
@@ -305,7 +308,7 @@ Game.prototype = {
 			this.screenContext.font = '50px Georgia';
 			this.screenContext.fillText('you lost.', 100, 170);
 			this.screenContext.font= '20px Georgia';
-			this.screenContext.fillText('the vampires will knaw your corpse forever.', 100, 210);
+			this.screenContext.fillText('the vampires will gnaw your corpse forever.', 100, 210);
 		}
 		
 		window.requestAnimationFrame(
