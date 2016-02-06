@@ -85,7 +85,7 @@ Input.prototype = {
 	},
 	
 	mousemove: function(e) {
-
+		//console.log(e.clientX);
 	},
 	
 	mousedown: function(e) {

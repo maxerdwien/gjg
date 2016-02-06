@@ -1,6 +1,6 @@
 var Player = function(grid) {
 
-	this.bb = new BoundingBox(WIDTH/2, HEIGHT/2, 64, 64);
+	this.bb = new BoundingBox(WIDTH/2-32, HEIGHT/2-32, 64, 64);
 	this.cells = [];
 	this.cGrid = grid;
 	
@@ -52,7 +52,7 @@ Player.prototype = {
 	render: function(ctx) {
 		ctx.save();
 		if (!this.facing_right) {
-			ctx.translate(WIDTH + this.bb.width, 0);
+			ctx.translate(WIDTH, 0);
 			ctx.scale(-1, 1);
 		}
 		ctx.drawImage(Resource.Image.samantha, this.current_pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
@@ -192,27 +192,23 @@ Player.prototype = {
 			
 			var walking = false;
 			if (game.input.inputState.up) {
-				this.bb.lasty = this.y;
+				this.bb.lasty = this.bb.y;
 				this.bb.y -= speed;
-				gy -= speed;
 				walking = true;
 			} else if (game.input.inputState.down) {
-				this.bb.lasty = this.y;
+				this.bb.lasty = this.bb.y;
 				this.bb.y += speed;
-				gy += speed;
 				walking = true;
 			}
 			
 			if (game.input.inputState.right) {
-				this.bb.lastx = this.x;
+				this.bb.lastx = this.bb.x;
 				this.bb.x += speed;
-				gx += speed;
 				walking = true;
 				this.facing_right = true;
 			} else if (game.input.inputState.left) {
-				this.bb.lastx = this.x;
+				this.bb.lastx = this.bb.x;
 				this.bb.x -= speed;
-				gx -= speed;
 				walking = true;
 				this.facing_right = false;
 			}
@@ -226,10 +222,12 @@ Player.prototype = {
 			this.current_pose = 0;
 		}
 		
-		//stop the player from going out of bounds, yes I know I'm using magic numbers
-		//fite me.
-		this.bb.x = this.clamp(this.bb.x, 0, 10000);
-		this.bb.y = this.clamp(this.bb.y, 0, 10000);
+		//stop the player from going out of bounds
+		this.bb.x = this.clamp(this.bb.x, 0, world_width);
+		this.bb.y = this.clamp(this.bb.y, 0, world_height);
+		
+		gx = this.bb.x + this.bb.width/2 - WIDTH/2;
+		gy = this.bb.y + this.bb.height/2 - HEIGHT/2;
 		
 		if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))
 		{

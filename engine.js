@@ -5,6 +5,9 @@ var HEIGHT;
 var gx = 0;
 var gy = 0;
 
+var world_width = 10000;
+var world_height = 10000;
+
 // Resources
 Resource = {
 	Image: {
@@ -14,6 +17,8 @@ Resource = {
 		insulin: new Image(),
 		fastfood: new Image(),
 		vampire: new Image(),
+		
+		alphabet: new Image(),
 	},
 }
 
@@ -24,6 +29,7 @@ Resource.Image.insulin.src = 'Images/Insulin.gif';
 Resource.Image.fastfood.src = 'Images/fastfood.gif';
 Resource.Image.vampire.src = 'Images/vampire.png';
 
+Resource.Image.alphabet.src = 'Images/alphabet.png';
 
 
 var Game = function() {
@@ -46,41 +52,33 @@ var Game = function() {
 	// Game variables
 	this.game_state = 'normal';
 	
-	var x_max = 10000;
-	var y_max = 10000;
-	
 	this.input = new Input(this.screen, window);
 	
-	this.cGrid = new CollisionGrid(x_max, y_max, 32);
+	this.cGrid = new CollisionGrid(world_width, world_height, 32);
 	
 	this.player = new Player(this.cGrid);
 	this.cGrid.add(this.player);
 	
 	this.vampires = [];
-	//this.vampires.push(new Vampire(200, 200));
 	
 	this.glucose_pickups = [];
-	//for (var i = 0; i < 100; i++) {
-	//	this.glucose_pickups.push(new GlucosePickup(100*i, 100));
-	//}
 	
 	this.insulin_pickups = [];
-	//for (var i = 0; i < 100; i++) {
-	//	this.insulin_pickups.push(new InsulinPickup(100*i, 500));
-	//}
 	
 	for (var i = 0; i < 500; i++) {
-		this.vampires.push(new Vampire(Math.random()*(x_max-30), Math.random()*(y_max-30), this.cGrid, Math.random() * 2, Math.random() * 2));
+		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.random() * 2, Math.random() * 2));
 		this.cGrid.add(this.vampires[i]);
 	}
 	for (var i = 0; i < 500; i++) {
-		this.glucose_pickups.push(new GlucosePickup(Math.random()*(x_max-10), Math.random()*(y_max-10)));
+		this.glucose_pickups.push(new GlucosePickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
 	for (var i = 0; i < 500; i++) {
-		this.insulin_pickups.push(new InsulinPickup(Math.random()*(x_max-10), Math.random()*(y_max-10)));
+		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
+	
+	this.textbox = new Textbox();
 }
 
 Game.prototype = {
@@ -166,6 +164,8 @@ Game.prototype = {
 		}
 		
 		this.player.render(this.screenContext);
+		
+		this.textbox.write(this.screenContext, "this is some text!");
 	},
 	
 	start: function() {

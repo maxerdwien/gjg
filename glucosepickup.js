@@ -1,6 +1,6 @@
 var GlucosePickup = function(x, y) {
 	
-	this.bb = new BoundingBox(x, y, 10, 10);
+	this.bb = new BoundingBox(x, y, 64, 64);
 	this.cells = []
 	
 	this.glucose_amount = 15;
@@ -10,6 +10,6 @@ var GlucosePickup = function(x, y) {
 
 GlucosePickup.prototype = {
 	render: function(ctx) {
-		ctx.drawImage(Resource.Image.fastfood, this.bb.x - this.bb.width/2 - gx, this.bb.y - this.bb.height/2 - gy, 64, 64);
+		ctx.drawImage(Resource.Image.fastfood, this.bb.x - gx, this.bb.y - gy, 64, 64);
 	},
 }
