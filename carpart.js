@@ -7,7 +7,7 @@ var CarPart = function(x, y, name, sprite) {
 	
 	this.picked_up = false;
 	
-	this.render_text_timer = 2000;
+	this.render_text_timer = 3000;
 	
 	this.dead = false;
 }
@@ -18,8 +18,14 @@ CarPart.prototype = {
 			ctx.drawImage(this.sprite, this.bb.x-gx, this.bb.y-gy, 64, 64);
 		} else {
 			if (!this.dead) {
-				game.textbox.write(ctx, 'you got the ' + this.name + '.\n' + game.car_parts_found.toString() + '/4 parts found',
+				
+				if (game.car_parts_found.toString() == '4')	{
+					game.textbox.write(ctx, 'you got the ' + this.name + '.\n' + game.car_parts_found.toString() + '/4 parts found\ngo fix your car!',
 						100, 300, 24);
+				} else {
+					game.textbox.write(ctx, 'you got the ' + this.name + '.\n' + game.car_parts_found.toString() + '/4 parts found',
+						100, 300, 24);
+				}
 			}
 		}
 	},

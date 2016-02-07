@@ -55,16 +55,19 @@ Input.prototype = {
 				
 			case 16:
 				game.player.use_syringe();
-				console.log(game.player.bb.x, game.player.bb.y);
+				//console.log(game.player.bb.x, game.player.bb.y);
 				break;
 				
 			case 32:
+			case 13:
 				game.player.throw_syringe();
 				break;
 		}
 		
 		if (game.game_state == 'cutscene') {
-			game.cutscene.count = game.cutscene.scene_lengths[game.cutscene.current_scene];
+			if (game.cutscene.count >= 50) {
+				game.cutscene.count = game.cutscene.scene_lengths[game.cutscene.current_scene];
+			}
 		}
 	},
 	

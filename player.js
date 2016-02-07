@@ -59,7 +59,7 @@ var Player = function(grid) {
 	
 	this.ready_to_use_syringe = true;
 	
-	this.invincible = false;
+	this.invincible = true;
 	
 	this.invincible_timer_max = 1400;
 	this.invincible_timer = 0;

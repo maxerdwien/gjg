@@ -184,6 +184,8 @@ var Game = function() {
 	this.text_triggers.push(new TextTrigger(7471, 4602.5, Resource.Image.steak, 4, 64, true)); // steak
 	
 	this.cutscene = new Cutscene();
+	
+	this.frame = 0;
 }
 
 Game.prototype = {
@@ -345,7 +347,7 @@ Game.prototype = {
 			this.screenContext.fillStyle="white";
 			this.screenContext.fillRect(0, 500, WIDTH, HEIGHT);
 			this.textbox.write(this.screenContext, 'you lost.', 100, 520, 32);
-			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 560, 24);
+			this.textbox.write(this.screenContext, 'you will never know why you were in this forest\nwith only a busted up car.', 100, 560, 24);
 		} else if (this.game_state == 'won') {
 			
 			if (this.do_darken) {
@@ -361,10 +363,16 @@ Game.prototype = {
 			this.screenContext.fillStyle="white";
 			this.screenContext.fillRect(0, 500, WIDTH, HEIGHT);
 			this.textbox.write(this.screenContext, 'you won!', 100, 520, 32);
-			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 560, 24);
+			this.textbox.write(this.screenContext, 'that will be the last time that you follow\nhighway billboards offering\n"free forest hamburgers".', 100, 560, 24);
 		}
 		else if (this.game_state == 'cutscene') {
 			this.cutscene.render(this.screenContext);
+		}
+		
+		this.frame++;
+		if (this.frame == 10) {
+			this.game_state = 'cutscene';
+			this.cutscene.current_scene = 6;
 		}
 	},
 	
