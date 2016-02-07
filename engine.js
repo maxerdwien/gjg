@@ -116,7 +116,7 @@ var Game = function() {
 	
 	this.text_triggers = [];
 	
-	this.text_triggers.push(new TextTrigger(2, 2, 0, 'cutscene'));
+	this.text_triggers.push(new TextTrigger(2, 2, 0, 0));
 	
 	this.cutscene = new Cutscene();
 }
@@ -146,7 +146,8 @@ Game.prototype = {
 			for (var i = 0; i < this.text_triggers.length; i++) {
 				if (!this.text_triggers[i].triggered && this.text_triggers[i].bb.touching(this.player.bb)) {
 					this.text_triggers[i].triggered = true;
-					this.game_state = this.text_triggers[i].trigger_state;
+					this.game_state = 'cutscene';
+					this.cutscene.current_scene = this.text_triggers[i].trigger_scene;
 				}
 			}
 		
@@ -269,8 +270,10 @@ Game.prototype = {
 				this.screenContext.restore();
 				this.do_darken = false;
 			}
-			this.textbox.write(this.screenContext, 'you lost.', 100, 170, 32);
-			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 208, 24);
+			this.screenContext.fillStyle="white";
+			this.screenContext.fillRect(0, 500, WIDTH, HEIGHT);
+			this.textbox.write(this.screenContext, 'you lost.', 100, 520, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 560, 24);
 		} else if (this.game_state == 'won') {
 			
 			if (this.do_darken) {
@@ -283,8 +286,10 @@ Game.prototype = {
 				this.screenContext.restore();
 				this.do_darken = false;
 			}
-			this.textbox.write(this.screenContext, 'you won!', 100, 170, 32);
-			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 208, 24);
+			this.screenContext.fillStyle="white";
+			this.screenContext.fillRect(0, 500, WIDTH, HEIGHT);
+			this.textbox.write(this.screenContext, 'you won!', 100, 520, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 560, 24);
 		}
 		else if (this.game_state == 'cutscene') {
 			this.cutscene.render(this.screenContext);

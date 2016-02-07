@@ -1,7 +1,7 @@
-var TextTrigger = function(x, y, sprite, state) {
+var TextTrigger = function(x, y, sprite, scene) {
 	this.bb = new BoundingBox(x, y, 64, 64);
 	
-	this.trigger_state = state;
+	this.trigger_scene = scene;
 	
 	this.triggered = false;
 }

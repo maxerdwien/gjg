@@ -61,6 +61,10 @@ Input.prototype = {
 				game.player.throw_syringe();
 				break;
 		}
+		
+		if (game.game_state == 'cutscene') {
+			game.cutscene.count = game.cutscene.scene_lengths[game.cutscene.current_scene];
+		}
 	},
 	
 	keyUp: function(e) {
