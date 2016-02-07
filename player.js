@@ -48,6 +48,11 @@ var Player = function(grid) {
 	this.facing_right = true;
 	
 	this.needles = [];
+	
+	this.throwing = false;
+	
+	this.throwing_timer_max = 500;
+	this.throwing_timer = 0;
 }
 
 Player.prototype = {
@@ -62,7 +67,11 @@ Player.prototype = {
 			ctx.translate(WIDTH, 0);
 			ctx.scale(-1, 1);
 		}
-		ctx.drawImage(Resource.Image.samantha, this.current_pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		var pose = this.current_pose;
+		if (this.throwing) {
+			pose += 3;
+		}
+		ctx.drawImage(Resource.Image.samantha, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
 		ctx.restore();
 
 		// render glucose bar
@@ -151,6 +160,13 @@ Player.prototype = {
 	},
 	
 	update: function(et) {
+		if (this.throwing) {
+			this.throwing_timer += et;
+			if (this.throwing_timer >= this.throwing_timer_max) {
+				this.throwing = false;
+				this.throwing_timer -= this.throwing_timer_max;
+			}
+		}
 		for (var i = 0; i < this.needles.length; i++) {
 			this.needles[i].update(et);
 		}
@@ -231,7 +247,7 @@ Player.prototype = {
 		}
 		
 		if (this.walking) {
-			this.current_pose = 2 + this.walking_step;
+			this.current_pose = 1 + this.walking_step;
 		} else {
 			this.current_pose = 0;
 		}
@@ -271,6 +287,7 @@ Player.prototype = {
 	
 	throw_syringe: function() {
 		if (this.syringes > 0) {
+			this.throwing = true;
 			this.syringes--;
 			var needle_vel = 10;
 			var x_vel = 0;
