@@ -53,9 +53,13 @@ Input.prototype = {
 				this.inputState.up = false;
 				break;
 				
-			case 32:
+			case 16:
 				game.player.use_syringe();
-			
+				break;
+				
+			case 32:
+				game.player.throw_syringe();
+				break;
 		}
 	},
 	
@@ -85,7 +89,7 @@ Input.prototype = {
 	},
 	
 	mousemove: function(e) {
-
+		//console.log(e.clientX);
 	},
 	
 	mousedown: function(e) {

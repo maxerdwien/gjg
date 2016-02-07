@@ -39,14 +39,14 @@ Vampire.prototype = {
 
 		var pose = this.current_pose;
 		if (this.aggro) {
-			pose += 5;
+			pose += 3;
 		}
 		ctx.drawImage(Resource.Image.vampire, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
 		
 		// render aggro range for playtesting
-		ctx.beginPath();
-		ctx.arc(this.bb.x+this.bb.width/2-gx, this.bb.y+this.bb.height/2-gy, this.aggro_radius, 0, 6.29);
-		ctx.stroke();
+		//ctx.beginPath();
+		//ctx.arc(this.bb.x+this.bb.width/2-gx, this.bb.y+this.bb.height/2-gy, this.aggro_radius, 0, 6.29);
+		//ctx.stroke();
 		
 		ctx.restore();
 		
@@ -60,7 +60,7 @@ Vampire.prototype = {
 		this.flap_timer += et;
 		if (this.flap_timer > this.flap_timer_max) {
 			this.flap_timer -= this.flap_timer_max;
-			this.current_pose = (this.current_pose+1) % 4;
+			this.current_pose = (this.current_pose+1) % 3;
 		}
 
 		var dist = Math.sqrt(Math.pow(this.bb.x-game.player.bb.x, 2) + Math.pow(this.bb.y-game.player.bb.y, 2));
@@ -91,7 +91,8 @@ Vampire.prototype = {
 				if (this.shoot_timer > this.shoot_timer_max) {
 					this.shoot_timer -= this.shoot_timer_max;
 					var bullet_speed = 10;
-					this.bullets.push(new Bullet(this.bb.x, this.bb.y, bullet_speed * Math.cos(angle), bullet_speed * Math.sin(angle)));
+					var bullet_angle = angle + (Math.random()-0.5)*0.5;
+					this.bullets.push(new Bullet(this.bb.x + this.bb.width/2, this.bb.y + this.bb.height/2, bullet_speed * Math.cos(bullet_angle), bullet_speed * Math.sin(bullet_angle)));
 				}
 			}
 			

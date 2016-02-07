@@ -1,12 +1,12 @@
 #game-container {
 	position: relative;
-	width: 1024px;
-	height: 512px;
+	width: 1280px;
+	height: 720px;
 }
 
 #screen {
 	position: relative;
 	border: solid 1px black;
-	width: 1024px;
-	height: 512px;
+	width: 1280px;
+	height: 720px;
 }
