@@ -32,7 +32,11 @@ TileManager.prototype =
 		{
 			for(j = 0; j< this.mapsize.width; j++)
 			{
-				ctx.drawImage(Resource.Image.mspritesheet, this.spritesize.width * (this.spritemap[(this.mapsize.height * i + j)] - 1), 0, this.spritesize.width-1, this.spritesize.height-1, this.spritesize.width * j * 4 - gx, this.spritesize.height * i * 4 - gy, this.spritesize.width * 4, this.spritesize.height * 4);
+				ctx.drawImage(Resource.Image.mspritesheet,
+						this.spritesize.width * (this.spritemap[(this.mapsize.height * i + j)] - 1)+0.5, 0,
+						this.spritesize.width-1, this.spritesize.height,
+						this.spritesize.width * j * 4 - gx, this.spritesize.height * i * 4 - gy,
+						this.spritesize.width * 4, this.spritesize.height * 4);
 			}
 		}
 	},

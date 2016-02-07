@@ -110,16 +110,25 @@ var Game = function() {
 	
 	this.do_darken = true;
 	
+	this.do_cs1 = true;
+	
 	this.car_parts_found = 0;
+	
+	this.text_triggers = [];
+	
+	this.text_triggers.push(new TextTrigger(2, 2, 0, 'cutscene'));
+	
+	this.cutscene = new Cutscene();
 }
 
 Game.prototype = {
 	update: function(elapsedTime) {
-		self = this;
-		if (this.player.health <= 0) {
-			this.game_state = 'lost';
-		}
-		this.player.update(elapsedTime);
+		if (this.game_state == 'normal') {
+			self = this;
+			if (this.player.health <= 0) {
+				this.game_state = 'lost';
+			}
+			this.player.update(elapsedTime);
 		
 
 		this.player.cells.forEach( function(cell, index, arr) {
@@ -134,132 +143,121 @@ Game.prototype = {
 				}
 		})
 
-		for (var i = 0; i < this.carparts.length; i++) {
-			this.carparts[i].update(elapsedTime);
-			if (this.carparts[i].bb.touching(this.player.bb) && !this.carparts[i].picked_up) {
-				this.carparts[i].picked_up = true;
-				this.car_parts_found++;
-				if (this.car_parts_found == 4) {
-					this.game_state = 'won';
+			for (var i = 0; i < this.text_triggers.length; i++) {
+				if (!this.text_triggers[i].triggered && this.text_triggers[i].bb.touching(this.player.bb)) {
+					this.text_triggers[i].triggered = true;
+					this.game_state = this.text_triggers[i].trigger_state;
 				}
-				break;
 			}
-		}
-
 		
-		for (var i = 0; i < this.vampires.length; i++) {
-			this.vampires[i].update(elapsedTime);
-			var v = this.vampires[i];
-			
-			if (this.player.bb.touching(v.bb)) {
-				if (!this.player.invincible) {
-					this.player.health--;
-					this.player.invincible = true;
-				}
-				this.player.glucose -= this.vampires[i].glucose_amount;
-				this.vampires.splice(i, 1);
-			}
-			for (var j = 0; j < v.bullets.length; j++) {
-				var b = v.bullets[j];
-				if (this.player.bb.touching(b.bb)) {
-					if (!this.player.invincible) {
-						this.player.health -= 1;
-						this.player.invincible = true;
+			for (var i = 0; i < this.carparts.length; i++) {
+				this.carparts[i].update(elapsedTime);
+				if (this.carparts[i].bb.touching(this.player.bb) && !this.carparts[i].picked_up) {
+					this.carparts[i].picked_up = true;
+					this.car_parts_found++;
+					if (this.car_parts_found == 4) {
+						this.game_state = 'won';
 					}
-					v.bullets.splice(j, 1);
-					j--;
-				}
-			}
-			
-			for (var j = 0; j < this.player.needles.length; j++) {
-				if (this.player.needles[j].bb.touching(v.bb)) {
-					this.vampires.splice(i, 1);
-					i--;
-					this.player.needles.splice(j, 1);
 					break;
 				}
 			}
-		}
-		
-		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			
-			var gp = this.glucose_pickups[i];
-			
-			if (this.player.bb.touching(gp.bb)) {
-				this.player.latent_glucose += gp.glucose_amount;
-				//this.player.health += gp.health_amount;
-				this.player.fed += gp.feed_amount;
-				if (this.player.fed > this.player.fed_max) {
-					this.player.fed = this.player.fed_max;
+			for (var i = 0; i < this.vampires.length; i++) {
+				this.vampires[i].update(elapsedTime);
+				var v = this.vampires[i];
+				
+				if (this.player.bb.touching(v.bb)) {
+					if (!this.player.invincible) {
+						this.player.health--;
+						this.player.invincible = true;
+					}
+					this.player.glucose -= this.vampires[i].glucose_amount;
+					this.vampires.splice(i, 1);
+				}
+				for (var j = 0; j < v.bullets.length; j++) {
+					var b = v.bullets[j];
+					if (this.player.bb.touching(b.bb)) {
+						if (!this.player.invincible) {
+							this.player.health -= 1;
+							this.player.invincible = true;
+						}
+						v.bullets.splice(j, 1);
+						j--;
+					}
 				}
 				
-				this.glucose_pickups.splice(i, 1);
-				i--;
+				for (var j = 0; j < this.player.needles.length; j++) {
+					if (this.player.needles[j].bb.touching(v.bb)) {
+						this.vampires.splice(i, 1);
+						i--;
+						break;
+					}
+				}
+			}
+			
+			for (var i = 0; i < this.glucose_pickups.length; i++) {
+				
+				var gp = this.glucose_pickups[i];
+				
+				if (this.player.bb.touching(gp.bb)) {
+					this.player.latent_glucose += gp.glucose_amount;
+					//this.player.health += gp.health_amount;
+					this.player.fed += gp.feed_amount;
+					if (this.player.fed > this.player.fed_max) {
+						this.player.fed = this.player.fed_max;
+					}
+					
+					this.glucose_pickups.splice(i, 1);
+					i--;
+				}
+			}
+			
+			for (var i = 0; i < this.insulin_pickups.length; i++) {
+				
+				var ip = this.insulin_pickups[i];
+				if (this.player.bb.touching(ip.bb)) {
+					this.player.syringes += 1;
+					
+					this.insulin_pickups.splice(i, 1);
+					i--;
+				}
 			}
 		}
-		
-		for (var i = 0; i < this.insulin_pickups.length; i++) {
-			
-			var ip = this.insulin_pickups[i];
-			if (this.player.bb.touching(ip.bb)) {
-				this.player.syringes += 1;
-				
-				this.insulin_pickups.splice(i, 1);
-				i--;
-			}
+		else if (this.game_state == 'cutscene') {
+			this.cutscene.update(elapsedTime);
 		}
 	},
 	
 	render: function() {
-		this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
-		
-		this.tilemap.render(this.screenContext);
-		this.cGrid.render();
-		
-		for (var i = 0; i < this.glucose_pickups.length; i++) {
-			this.glucose_pickups[i].render(this.screenContext);
-		}
-		
-		for (var i = 0; i < this.insulin_pickups.length; i++) {
-			this.insulin_pickups[i].render(this.screenContext);
-		}
-		
-		for (var i = 0; i < this.vampires.length; i++) {
-			this.vampires[i].render(this.screenContext);
-		}
-		
-		for (var i = 0; i < this.carparts.length; i++) {
-			this.carparts[i].render(this.screenContext);
-		}
-		
-		this.player.render(this.screenContext);
-	},
-	
-	start: function() {
-		var self = this;
-		
-		// Timing variables
-		this.lastTime = 0;
-		
-		window.requestAnimationFrame(
-			function(time) {
-				self.loop.call(self, time);
-			}
-		);
-	},
-	
-	loop: function(time) {
-		var self = this;
-		
-		var elapsedTime = (time - this.lastTime);
-		this.lastTime = time;
-		
-		
-		
 		if (this.game_state == 'normal') {
-			self.update(elapsedTime);
-			self.render();
-		} else if (this.game_state == 'lost') {
+			this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
+			
+			this.tilemap.render(this.screenContext);
+			this.cGrid.render();
+			
+			for (var i = 0; i < this.text_triggers.length; i++) {
+				this.text_triggers[i].render(this.screenContext);
+			}
+			
+			for (var i = 0; i < this.glucose_pickups.length; i++) {
+				this.glucose_pickups[i].render(this.screenContext);
+			}
+			
+			for (var i = 0; i < this.insulin_pickups.length; i++) {
+				this.insulin_pickups[i].render(this.screenContext);
+			}
+			
+			for (var i = 0; i < this.vampires.length; i++) {
+				this.vampires[i].render(this.screenContext);
+			}
+			
+			for (var i = 0; i < this.carparts.length; i++) {
+				this.carparts[i].render(this.screenContext);
+			}
+			
+			this.player.render(this.screenContext);
+		}
+		else if (this.game_state == 'lost') {
 			
 			if (this.do_darken) {
 				this.screenContext.save();
@@ -288,6 +286,32 @@ Game.prototype = {
 			this.textbox.write(this.screenContext, 'you won!', 100, 170, 32);
 			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 208, 24);
 		}
+		else if (this.game_state == 'cutscene') {
+			this.cutscene.render(this.screenContext);
+		}
+	},
+	
+	start: function() {
+		var self = this;
+		
+		// Timing variables
+		this.lastTime = 0;
+		
+		window.requestAnimationFrame(
+			function(time) {
+				self.loop.call(self, time);
+			}
+		);
+	},
+	
+	loop: function(time) {
+		var self = this;
+		
+		var elapsedTime = (time - this.lastTime);
+		this.lastTime = time;
+		
+		self.update(elapsedTime);
+		self.render();
 		
 		window.requestAnimationFrame(
 			function(time) {
