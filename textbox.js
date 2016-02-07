@@ -73,8 +73,6 @@ Textbox.prototype = {
 			else if (string.charAt(i) == '0') {
 				char_num = 41;
 			}
-			
-			
 			else {
 				char_num = string.charCodeAt(i) - 97;
 			}

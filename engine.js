@@ -108,7 +108,13 @@ var Game = function() {
 	
 	this.do_darken = true;
 	
+	this.do_cs1 = true;
+	
 	this.car_parts_found = 0;
+	
+	this.text_triggers = [];
+	
+	this.text_triggers.push(new TextTrigger(2, 2, 0, 'cs1'));
 }
 
 Game.prototype = {
@@ -118,6 +124,12 @@ Game.prototype = {
 			this.game_state = 'lost';
 		}
 		this.player.update(elapsedTime);
+		
+		for (var i = 0; i < this.text_triggers.length; i++) {
+			if (this.text_triggers[i].bb.touching(this.player.bb)) {
+				this.game_state = this.text_triggers[i].trigger_state;
+			}
+		}
 		
 		for (var i = 0; i < this.carparts.length; i++) {
 			this.carparts[i].update(elapsedTime);
@@ -200,6 +212,10 @@ Game.prototype = {
 		this.tilemap.render(this.screenContext);
 		this.cGrid.render();
 		
+		for (var i = 0; i < this.text_triggers.length; i++) {
+			this.text_triggers[i].render(this.screenContext);
+		}
+		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			this.glucose_pickups[i].render(this.screenContext);
 		}
@@ -238,8 +254,6 @@ Game.prototype = {
 		var elapsedTime = (time - this.lastTime);
 		this.lastTime = time;
 		
-		
-		
 		if (this.game_state == 'normal') {
 			self.update(elapsedTime);
 			self.render();
@@ -271,6 +285,15 @@ Game.prototype = {
 			}
 			this.textbox.write(this.screenContext, 'you won!', 100, 170, 32);
 			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 208, 24);
+		}
+		else if (this.game_state == 'cs1') {
+			if (this.do_cs1) {
+				this.textbox.write(this.screenContext, 'hey guys...', 100, 170, 32);
+				var now = new Date().getTime();
+				while ((new Date()).getTime() < now + 2000) {}
+				this.textbox.write(this.screenContext, 'we got one!', 100, 170, 32);
+			}
+			this.do_cs1 = false;
 		}
 		
 		window.requestAnimationFrame(

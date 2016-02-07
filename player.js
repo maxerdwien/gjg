@@ -354,7 +354,7 @@ Player.prototype = {
 					x_vel = -needle_vel;
 				}
 			}
-			this.needles.push(new Needle(this.bb.x + this.bb.width/2, this.bb.y + this.bb.height/2, x_vel, y_vel));
+			this.needles.push(new Needle(this.bb.x, this.bb.y, x_vel, y_vel));
 		}
 	}
 }
