@@ -5,8 +5,8 @@ var HEIGHT;
 var gx = 0;
 var gy = 0;
 
-var world_width = 2000;
-var world_height = 2000;
+var world_width = 4096;
+var world_height = 4096;
 
 // Resources
 Resource = {
