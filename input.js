@@ -56,6 +56,7 @@ Input.prototype = {
 			case 16:
 				game.player.use_syringe();
 				break;
+				
 			case 32:
 				game.player.throw_syringe();
 				break;

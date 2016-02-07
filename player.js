@@ -53,6 +53,11 @@ var Player = function(grid) {
 	
 	this.throwing_timer_max = 500;
 	this.throwing_timer = 0;
+	
+	this.use_syringe_cooldown_max = 100;
+	this.use_syringe_cooldown = 0;
+	
+	this.ready_to_use_syringe = true;
 }
 
 Player.prototype = {
@@ -141,14 +146,13 @@ Player.prototype = {
 		{
 			var health_x = 10;
 			var health_y = 90;
-			var heart_size = 30;
+			var heart_size = 50;
 			for (var i = 0; i < this.health; i++) {
-				var heart_size = 30;
-				ctx.drawImage(Resource.Image.heart, health_x + i*(heart_size+10), health_y);
+				ctx.drawImage(Resource.Image.heart, health_x + i*(heart_size+10), health_y, heart_size, heart_size);
 			}
 			// and syringes
 			for (var i = 0; i < this.syringes; i++) {
-				ctx.drawImage(Resource.Image.insulin, health_x + (i+this.health)*(heart_size+10), health_y);
+				ctx.drawImage(Resource.Image.insulin_straight, health_x + (i+this.health)*(heart_size+10), health_y, heart_size, heart_size);
 			}
 		}
 	},
@@ -160,6 +164,13 @@ Player.prototype = {
 	},
 	
 	update: function(et) {
+		if (!this.ready_to_use_syringe) {
+			this.use_syringe_cooldown += et;
+			if (this.use_syringe_cooldown >= this.use_syringe_cooldown_max) {
+				this.use_syringe_cooldown = 0;
+				this.ready_to_use_syringe = true;
+			}
+		}
 		if (this.throwing) {
 			this.throwing_timer += et;
 			if (this.throwing_timer >= this.throwing_timer_max) {
@@ -281,6 +292,7 @@ Player.prototype = {
 	use_syringe: function() {
 		if (this.syringes > 0) {
 			this.syringes--;
+			this.ready_to_use_syringe = false;
 			this.glucose -= 15;
 		}
 	},
@@ -288,6 +300,7 @@ Player.prototype = {
 	throw_syringe: function() {
 		if (this.syringes > 0) {
 			this.throwing = true;
+			this.ready_to_use_syringe = false;
 			this.syringes--;
 			var needle_vel = 10;
 			var x_vel = 0;

@@ -14,7 +14,8 @@ Resource = {
 		heart: new Image(),
 		samantha: new Image(),
 		empty_heart: new Image(),
-		insulin: new Image(),
+		insulin_diag: new Image(),
+		insulin_straight: new Image(),
 		fastfood: new Image(),
 		vampire: new Image(),
 		mspritesheet: new Image(),
@@ -28,13 +29,14 @@ Resource = {
 Resource.Image.samantha.src = 'Images/Samantha.png';
 Resource.Image.heart.src = 'Images/Heart.gif';
 Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
-Resource.Image.insulin.src = 'Images/Insulin.gif';
+Resource.Image.insulin_diag.src = 'Images/insulin-diag.png';
+Resource.Image.insulin_straight.src = 'Images/insulin-straight.png';
 Resource.Image.fastfood.src = 'Images/fastfood.gif';
 Resource.Image.vampire.src = 'Images/vampire.png';
 
 Resource.Image.alphabet.src = 'Images/alphabet.png';
 
-Resource.Image.car_door.src = 'cardoor.png';
+Resource.Image.car_door.src = 'Images/cardoor.png';
 
 
 var Game = function() {
@@ -132,21 +134,12 @@ Game.prototype = {
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
 			var v = this.vampires[i];
-			v.cells.forEach( function(cell, index, arr) {
-				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data === self.player && self.player.bb.touching(v.bb))
-					{
-						self.player.health -= 1;
-						self.player.glucose -= v.glucose_amount;
-						self.vampires.splice(i, 1);
-						self.cGrid.remove(v);
-						return;
-					}
-					stepper = stepper.next;
-				}
-			})
+			
+			if (this.player.bb.touching(v.bb)) {
+				this.player.health--;
+				this.player.glucose -= this.vampires[i].glucose_amount;
+				this.vampires.splice(i, 1);
+			}
 			for (var j = 0; j < v.bullets.length; j++) {
 				var b = v.bullets[j];
 				if (this.player.bb.touching(b.bb)) {
@@ -169,27 +162,8 @@ Game.prototype = {
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			
 			var gp = this.glucose_pickups[i];
-			gp.cells.forEach( function(cell, index, arr) {
-				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data === self.player && self.player.bb.touching(gp.bb))
-					{
-						self.player.latent_glucose += gp.glucose_amount;
-						//this.player.health += gp.health_amount;
-						self.player.fed += gp.feed_amount;
-						if (self.player.fed > self.player.fed_max) {
-							self.player.fed = self.player.fed_max;
-						}
-				
-						self.glucose_pickups.splice(i, 1);
-						self.cGrid.remove(gp);
-						return;
-					}
-					stepper = stepper.next;
-				}
-			})
-			/*if (this.player.bb.touching(gp.bb)) {
+			
+			if (this.player.bb.touching(gp.bb)) {
 				this.player.latent_glucose += gp.glucose_amount;
 				//this.player.health += gp.health_amount;
 				this.player.fed += gp.feed_amount;
@@ -199,33 +173,18 @@ Game.prototype = {
 				
 				this.glucose_pickups.splice(i, 1);
 				i--;
-			}*/
+			}
 		}
 		
 		for (var i = 0; i < this.insulin_pickups.length; i++) {
 			
 			var ip = this.insulin_pickups[i];
-			ip.cells.forEach( function(cell, index, arr) {
-				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data === self.player && self.player.bb.touching(ip.bb))
-					{
-						self.player.syringes += 1;
-				
-						self.insulin_pickups.splice(i, 1);
-						i--;
-						return;
-					}
-					stepper = stepper.next;
-				}
-			})
-			/*if (this.player.bb.touching(ip.bb)) {
+			if (this.player.bb.touching(ip.bb)) {
 				this.player.syringes += 1;
 				
 				this.insulin_pickups.splice(i, 1);
 				i--;
-			}*/
+			}
 		}
 	},
 	

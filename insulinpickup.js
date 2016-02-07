@@ -9,7 +9,7 @@ var InsulinPickup = function(x, y) {
 InsulinPickup.prototype = {
 	render: function(ctx) {
 		ctx.save();
-		ctx.drawImage(Resource.Image.insulin, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		ctx.drawImage(Resource.Image.insulin_diag, this.bb.x - gx, this.bb.y - gy, 64, 64);
 		ctx.restore();
 	},
 }
