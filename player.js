@@ -58,6 +58,16 @@ var Player = function(grid) {
 	this.use_syringe_cooldown = 0;
 	
 	this.ready_to_use_syringe = true;
+	
+	this.invincible = false;
+	
+	this.invincible_timer_max = 1400;
+	this.invincible_timer = 0;
+	
+	this.flash_timer_max = 100;
+	this.flash_timer = 0;
+	
+	this.invisible = false;
 }
 
 Player.prototype = {
@@ -76,7 +86,9 @@ Player.prototype = {
 		if (this.throwing) {
 			pose += 3;
 		}
-		ctx.drawImage(Resource.Image.samantha, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		if (!this.invisible) {
+			ctx.drawImage(Resource.Image.samantha, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		}
 		ctx.restore();
 
 		// render glucose bar
@@ -164,6 +176,19 @@ Player.prototype = {
 	},
 	
 	update: function(et) {
+		if (this.invincible) {
+			this.invincible_timer += et;
+			this.flash_timer += et;
+			if (this.flash_timer >= this.flash_timer_max) {
+				this.flash_timer -= this.flash_timer_max;
+				this.invisible = !this.invisible;
+			}
+			if (this.invincible_timer >= this.invincible_timer_max) {
+				this.invincible_timer -= this.invincible_timer_max;
+				this.invincible = false;
+				this.invisible = false;
+			}
+		}
 		if (!this.ready_to_use_syringe) {
 			this.use_syringe_cooldown += et;
 			if (this.use_syringe_cooldown >= this.use_syringe_cooldown_max) {
@@ -194,7 +219,10 @@ Player.prototype = {
 		
 		this.fed -= 0.1;
 		if (this.fed <= 0) {
-			this.health--;
+			if (!this.invincible) {
+				this.health--;
+				this.invincible = true;
+			}
 			if (this.health > 0) {
 				this.fed = this.fed_reset_level;
 			}
@@ -211,7 +239,10 @@ Player.prototype = {
 		}
 		if (this.glucose >= this.max_glucose) {
 			if (this.timer <= 0) {
-				this.health -= 1;
+				if (!this.invincible) {
+					this.health -= 1;
+					this.invincible = true;
+				}
 				this.timer = this.max_timer;
 			}
 		}

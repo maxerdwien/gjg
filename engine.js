@@ -136,14 +136,20 @@ Game.prototype = {
 			var v = this.vampires[i];
 			
 			if (this.player.bb.touching(v.bb)) {
-				this.player.health--;
+				if (!this.player.invincible) {
+					this.player.health--;
+					this.player.invincible = true;
+				}
 				this.player.glucose -= this.vampires[i].glucose_amount;
 				this.vampires.splice(i, 1);
 			}
 			for (var j = 0; j < v.bullets.length; j++) {
 				var b = v.bullets[j];
 				if (this.player.bb.touching(b.bb)) {
-					this.player.health -= 1;
+					if (!this.player.invincible) {
+						this.player.health -= 1;
+						this.player.invincible = true;
+					}
 					v.bullets.splice(j, 1);
 					j--;
 				}
