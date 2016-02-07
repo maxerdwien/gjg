@@ -1,6 +1,6 @@
 var Player = function(grid) {
 
-	this.bb = new BoundingBox(WIDTH/2-32, HEIGHT/2-32, 64, 64);
+	this.bb = new BoundingBox(world_width/2, world_height/2, 64, 64);
 	this.cells = [];
 	this.cGrid = grid;
 	

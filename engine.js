@@ -5,8 +5,8 @@ var HEIGHT;
 var gx = 0;
 var gy = 0;
 
-var world_width = 4096;
-var world_height = 4096;
+var world_width = 13312;
+var world_height = 13312;
 
 // Resources
 Resource = {
@@ -18,11 +18,20 @@ Resource = {
 		insulin_straight: new Image(),
 		fastfood: new Image(),
 		vampire: new Image(),
-		mspritesheet: new Image(),
-		cardoor: new Image(),
+		
+		//cardoor: new Image(),
+		
 		alphabet: new Image(),
 		
 		car_door: new Image(),
+		
+		forest: new Image(),
+		cabin: new Image(),
+		sawmill: new Image(),
+		cabin_corners: new Image(),
+		beach: new Image(),
+		barn: new Image(),
+		graveyard: new Image(),
 	},
 }
 
@@ -37,6 +46,14 @@ Resource.Image.vampire.src = 'Images/vampire.png';
 Resource.Image.alphabet.src = 'Images/alphabet.png';
 
 Resource.Image.car_door.src = 'Images/cardoor.png';
+
+Resource.Image.forest.src = 'Images/foresttiles.png';
+Resource.Image.cabin.src = 'Images/cabin.png';
+Resource.Image.sawmill.src = 'Images/saw mill.png';
+Resource.Image.cabin_corners.src = 'Images/cabin corners.png';
+Resource.Image.beach.src = 'Images/lifes a beach (2).png';
+Resource.Image.barn.src = 'Images/Barn.png';
+Resource.Image.graveyard.src = 'Images/graveyard 2.png';
 
 
 var Game = function() {
