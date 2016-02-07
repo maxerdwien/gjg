@@ -19,11 +19,17 @@ Resource = {
 		fastfood: new Image(),
 		vampire: new Image(),
 		
-		//cardoor: new Image(),
-		
 		alphabet: new Image(),
 		
+		car: new Image(),
+		broken_car: new Image(),
+		
 		car_door: new Image(),
+		key: new Image(),
+		wheel: new Image(),
+		engine: new Image(),
+		
+		steak: new Image(),
 		
 		forest: new Image(),
 		cabin: new Image(),
@@ -45,9 +51,17 @@ Resource.Image.vampire.src = 'Images/vampire.png';
 
 Resource.Image.alphabet.src = 'Images/alphabet.png';
 
-Resource.Image.car_door.src = 'Images/cardoor.png';
+Resource.Image.car.src = 'Images/car.png';
+Resource.Image.broken_car.src = 'Images/broken_car.png';
 
-Resource.Image.forest.src = 'Images/foresttiles.png';
+Resource.Image.car_door.src = 'Images/cardoor.png';
+Resource.Image.key.src = 'Images/key.png';
+Resource.Image.wheel.src = 'Images/wheel.png';
+Resource.Image.engine.src = 'Images/DehEnjin.png';
+
+Resource.Image.steak.src = 'Images/steak.png';
+
+Resource.Image.forest.src = 'Images/forestterrains.png';
 Resource.Image.cabin.src = 'Images/cabin.png';
 Resource.Image.sawmill.src = 'Images/saw mill.png';
 Resource.Image.cabin_corners.src = 'Images/cabin corners.png';
@@ -94,32 +108,46 @@ var Game = function() {
 	
 	this.carparts = [];
 	
-	for (var i = 0; i < 20; i++) {
+	for (var i = 0; i < 100; i++) {
 		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.random() * 2, Math.random() * 2));
 		this.cGrid.add(this.vampires[i]);
 	}
-	for (var i = 0; i < 50; i++) {
+	for (var i = 0; i < 100; i++) {
 		this.glucose_pickups.push(new GlucosePickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
-	for (var i = 0; i < 50; i++) {
+	for (var i = 0; i < 100; i++) {
 		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.insulin_pickups[i]);
 	}
+	var ip = new InsulinPickup(942, 9361);
+	this.insulin_pickups.push(ip);
+	this.cGrid.add(ip);
+	var ip = new InsulinPickup(942, 9391);
+	this.insulin_pickups.push(ip);
+	this.cGrid.add(ip);
+	var ip = new InsulinPickup(972, 9391);
+	this.insulin_pickups.push(ip);
+	this.cGrid.add(ip);
+	var ip = new InsulinPickup(972, 9361);
+	this.insulin_pickups.push(ip);
+	this.cGrid.add(ip);
 	
-	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'car door', Resource.Image.car_door);
+	// in the sawmill
+	var newcar = new CarPart(9831, 1123, 'car door', Resource.Image.car_door);
 	this.carparts.push(newcar);
 	this.cGrid.add(newcar);
 	
-	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'wheel', Resource.Image.car_door);
+	// in the barn
+	var newcar = new CarPart(10858, 10808, 'wheel', Resource.Image.wheel);
 	this.carparts.push(newcar);
 	this.cGrid.add(newcar);
 	
-	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'engine', Resource.Image.car_door);
+	var newcar = new CarPart(2202, 10752, 'engine', Resource.Image.engine);
 	this.carparts.push(newcar);
 	this.cGrid.add(newcar);
 	
-	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'key', Resource.Image.car_door);
+	var newcar = new CarPart(1176, 1628, 'key', Resource.Image.key);
 	this.carparts.push(newcar);
 	this.cGrid.add(newcar);
 	
@@ -127,13 +155,12 @@ var Game = function() {
 	
 	this.do_darken = true;
 	
-	this.do_cs1 = true;
-	
 	this.car_parts_found = 0;
 	
 	this.text_triggers = [];
 	
-	this.text_triggers.push(new TextTrigger(2, 2, 0, 0));
+	this.text_triggers.push(new TextTrigger(6095, 7395.5, Resource.Image.broken_car, 2, 128));
+	this.text_triggers.push(new TextTrigger(7471, 4602.5, Resource.Image.steak, 4, 64, true)); // steak
 	
 	this.cutscene = new Cutscene();
 }
@@ -148,9 +175,9 @@ Game.prototype = {
 			this.player.update(elapsedTime);
 		
 
-		this.player.cells.forEach( function(cell, index, arr) {
-			var stepper = cell.first.next;
-			while(stepper != 0)
+			this.player.cells.forEach( function(cell, index, arr) {
+				var stepper = cell.first.next;
+				while(stepper != 0)
 				{
 					if(stepper.data instanceof Wall && self.player.bb.touching(stepper.data.bb))
 					{
@@ -158,13 +185,18 @@ Game.prototype = {
 					}
 					stepper = stepper.next;
 				}
-		})
+			});
 
 			for (var i = 0; i < this.text_triggers.length; i++) {
 				if (!this.text_triggers[i].triggered && this.text_triggers[i].bb.touching(this.player.bb)) {
 					this.text_triggers[i].triggered = true;
+					
 					this.game_state = 'cutscene';
 					this.cutscene.current_scene = this.text_triggers[i].trigger_scene;
+					if (this.text_triggers[i].heal) {
+						this.player.health = 5;
+						this.text_triggers.splice(i, 1);
+					}
 				}
 			}
 		
@@ -173,11 +205,13 @@ Game.prototype = {
 				if (this.carparts[i].bb.touching(this.player.bb) && !this.carparts[i].picked_up) {
 					this.carparts[i].picked_up = true;
 					this.car_parts_found++;
-					if (this.car_parts_found == 4) {
-						this.game_state = 'won';
-					}
 					break;
 				}
+			}
+			
+			if (this.car_parts_found == 4) {
+				this.text_triggers = [];
+				this.text_triggers.push(new TextTrigger(6095, 7395.5, Resource.Image.car, 3, 128));
 			}
 			
 			for (var i = 0; i < this.vampires.length; i++) {

@@ -73,6 +73,8 @@ var Player = function(grid) {
 Player.prototype = {
 	render: function(ctx) {
 		
+		//console.log(this.bb.x, this.bb.y);
+		
 		for (var i = 0; i < this.needles.length; i++) {
 			this.needles[i].render(ctx);
 		}
