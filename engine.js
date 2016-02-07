@@ -5,8 +5,8 @@ var HEIGHT;
 var gx = 0;
 var gy = 0;
 
-var world_width = 2000;
-var world_height = 2000;
+var world_width = 4096;
+var world_height = 4096;
 
 // Resources
 Resource = {
@@ -67,6 +67,8 @@ var Game = function() {
 	this.player = new Player(this.cGrid);
 	this.cGrid.add(this.player);
 	
+	this.walls = this.tilemap.initwalls(this.cGrid);
+	
 	this.vampires = [];
 	
 	this.glucose_pickups = [];
@@ -114,7 +116,7 @@ var Game = function() {
 	
 	this.text_triggers = [];
 	
-	this.text_triggers.push(new TextTrigger(2, 2, 0, 'cutscene'));
+	this.text_triggers.push(new TextTrigger(2, 2, 0, 0));
 	
 	this.cutscene = new Cutscene();
 }
@@ -127,14 +129,28 @@ Game.prototype = {
 				this.game_state = 'lost';
 			}
 			this.player.update(elapsedTime);
-			
+		
+
+		this.player.cells.forEach( function(cell, index, arr) {
+			var stepper = cell.first.next;
+			while(stepper != 0)
+				{
+					if(stepper.data instanceof Wall && self.player.bb.touching(stepper.data.bb))
+					{
+						self.player.bb.wallcollide(stepper.data);
+					}
+					stepper = stepper.next;
+				}
+		})
+
 			for (var i = 0; i < this.text_triggers.length; i++) {
 				if (!this.text_triggers[i].triggered && this.text_triggers[i].bb.touching(this.player.bb)) {
 					this.text_triggers[i].triggered = true;
-					this.game_state = this.text_triggers[i].trigger_state;
+					this.game_state = 'cutscene';
+					this.cutscene.current_scene = this.text_triggers[i].trigger_scene;
 				}
 			}
-			
+		
 			for (var i = 0; i < this.carparts.length; i++) {
 				this.carparts[i].update(elapsedTime);
 				if (this.carparts[i].bb.touching(this.player.bb) && !this.carparts[i].picked_up) {
@@ -254,8 +270,10 @@ Game.prototype = {
 				this.screenContext.restore();
 				this.do_darken = false;
 			}
-			this.textbox.write(this.screenContext, 'you lost.', 100, 170, 32);
-			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 208, 24);
+			this.screenContext.fillStyle="white";
+			this.screenContext.fillRect(0, 500, WIDTH, HEIGHT);
+			this.textbox.write(this.screenContext, 'you lost.', 100, 520, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 560, 24);
 		} else if (this.game_state == 'won') {
 			
 			if (this.do_darken) {
@@ -268,8 +286,10 @@ Game.prototype = {
 				this.screenContext.restore();
 				this.do_darken = false;
 			}
-			this.textbox.write(this.screenContext, 'you won!', 100, 170, 32);
-			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 208, 24);
+			this.screenContext.fillStyle="white";
+			this.screenContext.fillRect(0, 500, WIDTH, HEIGHT);
+			this.textbox.write(this.screenContext, 'you won!', 100, 520, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 560, 24);
 		}
 		else if (this.game_state == 'cutscene') {
 			this.cutscene.render(this.screenContext);

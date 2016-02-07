@@ -23,7 +23,30 @@ BoundingBox.prototype =
 	{
 		if(this.x < bb.x + bb.width && this.y < bb.y + bb.height && this.x + this.width > bb.x && this.y + this.height > bb.y) return true;
 		return false;
-	}
+	},
+	
+	pointdistance: function(pt)
+	{
+		return dist = Math.sqrt(Math.pow(this.x - pt.x, 2) + Math.pow(this.y - pt.y, 2));
+	},
+	
+	wallcollide: function (object)
+	{
+		var centerx = this.x + this.width/2;
+		var centery = this.y + this.height/2;
+		var run1 = object.bb.x + object.bb.width - object.bb.x;
+		var rise1 = object.bb.y + object.bb.height - object.bb.y;
+		var atzero1 = object.bb.y - ((rise1/run1) * object.bb.x);
+		var diagy1 = (rise1/run1) * centerx + atzero1;
+		var atzero2 = (object.bb.y + object.bb.height) - ((-run1/rise1) * object.bb.x);
+		var diagy2 = (-run1/rise1) * centerx + atzero2;
+		
+		if(centery > diagy1 && centery > diagy2) this.y = object.bb.y + object.bb.height;
+		else if(centery >= diagy1 && centery <= diagy2) this.x = object.bb.x - this.width;
+		else if(centery < diagy1 && centery < diagy2) this.y = object.bb.y - this.height;
+		else if(centery < diagy1 && centery > diagy2) this.x = object.bb.x + object.bb.width;
+		return;
+	},
 }
 
 var LLCell = function(data, next, list)
@@ -97,7 +120,7 @@ var CollisionGrid = function(width, height, granularity)
 	for(i = 0; i < this.width; i++)
 	{
 		this.cells[i] = [];
-		for(j = 0; j < this.height; j++)
+		for(var j = 0; j < this.height; j++)
 		{
 			this.cells[i][j] = new LList();
 		}
@@ -110,9 +133,9 @@ CollisionGrid.prototype = {
 	{
 		var min = object.bb.min();
 		var max = object.bb.max();
-		for(i = Math.floor(min.x/this.width); i <= Math.floor(max.x/this.width); i++)
+		for(var i = Math.floor(min.x/this.width); i <= Math.floor(max.x/this.width); i++)
 		{
-			for(j = Math.floor(min.y/this.height); j <= Math.floor(max.y/this.height); j++)
+			for(var j = Math.floor(min.y/this.height); j <= Math.floor(max.y/this.height); j++)
 			{
 				this.cells[i][j].add(object);
 				object.cells.push(this.cells[i][j]);

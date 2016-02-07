@@ -31,7 +31,6 @@ Cutscene.prototype = {
 		if (this.count >= this.scene_lengths[this.current_scene]) {
 			this.count = 0;
 			game.game_state = this.scene_modes[this.current_scene];
-			console.log(this.scene_modes, this.current_scene);
 			this.current_scene++;
 		}
 	}

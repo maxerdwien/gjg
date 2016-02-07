@@ -16,12 +16,12 @@ var TileManager = function()
 	}
 	
 	//collision data
-	this.collisionNum = this.jblob.layers[1].firstgid;
+	this.collisionnum = this.jblob.tilesets[1].firstgid;
 	this.collisionmap = this.jblob.layers[1].data;
 	
 	//car stuff
 	Resource.Image.cardoor.src = this.jblob.tilesets[2].image;
-	this.cardoornum = this.jblob.layers[2].firstgid;
+	this.cardoornum = this.jblob.tilesets[2].firstgid;
 }
 
 TileManager.prototype =
@@ -39,5 +39,24 @@ TileManager.prototype =
 						this.spritesize.width * 4, this.spritesize.height * 4);
 			}
 		}
-	}
+	},
+	
+	initwalls: function(grid)
+	{
+		var walls = [];
+		var count = 0;
+		for(var i = 0; i < this.mapsize.height; i++)
+		{
+			for(var j = 0; j< this.mapsize.width; j++)
+			{
+				if(this.collisionmap[this.mapsize.height * i + j] == this.collisionnum)
+				{
+					walls.push(new Wall(this.spritesize.width * j * 4 - gx, this.spritesize.height * i * 4 - gy, grid));
+					grid.add(walls[count]);
+					count++;
+				}
+			}
+		}
+		return walls;
+	},
 }

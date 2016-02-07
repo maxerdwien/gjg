@@ -110,9 +110,9 @@ Player.prototype = {
 					ctx.fillStyle = 'black';
 					if (this.glucose < this.min_glucose) {
 						//ctx.fillText('hypoglycemic!', 10, 150);
-						game.textbox.write(ctx, 'hypoglycemic!', 10, 140, 24);
+						game.textbox.write(ctx, 'hypoglycemic! eat something!', 10, 140, 24);
 					} else {
-						game.textbox.write(ctx, 'hyperglycemic!', 10, 140, 24);
+						game.textbox.write(ctx, 'hyperglycemic! take your insulin!', 10, 140, 24);
 					}
 					ctx.fillStyle = 'red';
 				} else {
@@ -157,14 +157,17 @@ Player.prototype = {
 		// render health
 		{
 			var health_x = 10;
-			var health_y = 90;
+			var health_y = 80;
 			var heart_size = 50;
 			for (var i = 0; i < this.health; i++) {
 				ctx.drawImage(Resource.Image.heart, health_x + i*(heart_size+10), health_y, heart_size, heart_size);
 			}
+			for (var i = this.health; i < 5; i++) {
+				ctx.drawImage(Resource.Image.empty_heart, health_x + i*(heart_size+10), health_y, heart_size, heart_size);
+			}
 			// and syringes
 			for (var i = 0; i < this.syringes; i++) {
-				ctx.drawImage(Resource.Image.insulin_straight, health_x + (i+this.health)*(heart_size+10), health_y, heart_size, heart_size);
+				ctx.drawImage(Resource.Image.insulin_straight, health_x + (i+5)*(heart_size+10), health_y, heart_size, heart_size);
 			}
 		}
 	},
