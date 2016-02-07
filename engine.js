@@ -17,7 +17,8 @@ Resource = {
 		insulin: new Image(),
 		fastfood: new Image(),
 		vampire: new Image(),
-		
+		mspritesheet: new Image(),
+		cardoor: new Image(),
 		alphabet: new Image(),
 		
 		car_door: new Image(),
@@ -46,6 +47,7 @@ var Game = function() {
 	this.backBuffer.width = this.screen.width;
 	this.backBuffer.height = this.screen.height;
 	this.backBufferContext = this.backBuffer.getContext('2d');
+	this.tilemap = new TileManager();
 	
 	//this.input = new Input(this.screen, window);
 	
@@ -230,6 +232,7 @@ Game.prototype = {
 	render: function() {
 		this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
 		
+		this.tilemap.render(this.screenContext);
 		this.cGrid.render();
 		
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
