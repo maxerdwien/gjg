@@ -38,6 +38,43 @@ Textbox.prototype = {
 			else if (string.charAt(i) == '-') {
 				char_num = 31;
 			}
+			else if (string.charAt(i) == '/') {
+				char_num = 42;
+			}
+			
+			// it was a game jam. shut up.
+			else if (string.charAt(i) == '1') {
+				char_num = 32;
+			}
+			else if (string.charAt(i) == '2') {
+				char_num = 33;
+			}
+			else if (string.charAt(i) == '3') {
+				char_num = 34;
+			}
+			else if (string.charAt(i) == '4') {
+				char_num = 35;
+			}
+			else if (string.charAt(i) == '5') {
+				char_num = 36;
+			}
+			else if (string.charAt(i) == '6') {
+				char_num = 37;
+			}
+			else if (string.charAt(i) == '7') {
+				char_num = 38;
+			}
+			else if (string.charAt(i) == '8') {
+				char_num = 39;
+			}
+			else if (string.charAt(i) == '9') {
+				char_num = 40;
+			}
+			else if (string.charAt(i) == '0') {
+				char_num = 41;
+			}
+			
+			
 			else {
 				char_num = string.charCodeAt(i) - 97;
 			}

@@ -5,8 +5,8 @@ var HEIGHT;
 var gx = 0;
 var gy = 0;
 
-var world_width = 10000;
-var world_height = 10000;
+var world_width = 2000;
+var world_height = 2000;
 
 // Resources
 Resource = {
@@ -14,23 +14,29 @@ Resource = {
 		heart: new Image(),
 		samantha: new Image(),
 		empty_heart: new Image(),
-		insulin: new Image(),
+		insulin_diag: new Image(),
+		insulin_straight: new Image(),
 		fastfood: new Image(),
 		vampire: new Image(),
 		mspritesheet: new Image(),
 		cardoor: new Image(),
 		alphabet: new Image(),
+		
+		car_door: new Image(),
 	},
 }
 
 Resource.Image.samantha.src = 'Images/Samantha.png';
 Resource.Image.heart.src = 'Images/Heart.gif';
 Resource.Image.empty_heart.src = 'Images/EmptyHeart.gif';
-Resource.Image.insulin.src = 'Images/Insulin.gif';
+Resource.Image.insulin_diag.src = 'Images/insulin-diag.png';
+Resource.Image.insulin_straight.src = 'Images/insulin-straight.png';
 Resource.Image.fastfood.src = 'Images/fastfood.gif';
 Resource.Image.vampire.src = 'Images/vampire.png';
 
 Resource.Image.alphabet.src = 'Images/alphabet.png';
+
+Resource.Image.car_door.src = 'Images/cardoor.png';
 
 
 var Game = function() {
@@ -69,22 +75,42 @@ var Game = function() {
 	
 	this.insulin_pickups = [];
 	
-	for (var i = 0; i < 500; i++) {
+	this.carparts = [];
+	
+	for (var i = 0; i < 20; i++) {
 		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.random() * 2, Math.random() * 2));
 		this.cGrid.add(this.vampires[i]);
 	}
-	for (var i = 0; i < 500; i++) {
+	for (var i = 0; i < 50; i++) {
 		this.glucose_pickups.push(new GlucosePickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
-	for (var i = 0; i < 500; i++) {
+	for (var i = 0; i < 50; i++) {
 		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.insulin_pickups[i]);
 	}
 	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'car door', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'wheel', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'engine', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'key', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
 	this.textbox = new Textbox();
 	
 	this.do_darken = true;
+	
+	this.car_parts_found = 0;
 }
 
 Game.prototype = {
@@ -95,6 +121,7 @@ Game.prototype = {
 		}
 		this.player.update(elapsedTime);
 		
+
 		this.player.cells.forEach( function(cell, index, arr) {
 			var stepper = cell.first.next;
 			while(stepper != 0)
@@ -106,29 +133,39 @@ Game.prototype = {
 					stepper = stepper.next;
 				}
 		})
+
+		for (var i = 0; i < this.carparts.length; i++) {
+			this.carparts[i].update(elapsedTime);
+			if (this.carparts[i].bb.touching(this.player.bb) && !this.carparts[i].picked_up) {
+				this.carparts[i].picked_up = true;
+				this.car_parts_found++;
+				if (this.car_parts_found == 4) {
+					this.game_state = 'won';
+				}
+				break;
+			}
+		}
+
 		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
 			var v = this.vampires[i];
-			v.cells.forEach( function(cell, index, arr) {
-				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data === self.player && self.player.bb.touching(v.bb))
-					{
-						self.player.health -= 1;
-						self.player.glucose -= v.glucose_amount;
-						self.vampires.splice(i, 1);
-						self.cGrid.remove(v);
-						return;
-					}
-					stepper = stepper.next;
+			
+			if (this.player.bb.touching(v.bb)) {
+				if (!this.player.invincible) {
+					this.player.health--;
+					this.player.invincible = true;
 				}
-			})
+				this.player.glucose -= this.vampires[i].glucose_amount;
+				this.vampires.splice(i, 1);
+			}
 			for (var j = 0; j < v.bullets.length; j++) {
 				var b = v.bullets[j];
 				if (this.player.bb.touching(b.bb)) {
-					this.player.health -= 1;
+					if (!this.player.invincible) {
+						this.player.health -= 1;
+						this.player.invincible = true;
+					}
 					v.bullets.splice(j, 1);
 					j--;
 				}
@@ -147,27 +184,8 @@ Game.prototype = {
 		for (var i = 0; i < this.glucose_pickups.length; i++) {
 			
 			var gp = this.glucose_pickups[i];
-			gp.cells.forEach( function(cell, index, arr) {
-				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data === self.player && self.player.bb.touching(gp.bb))
-					{
-						self.player.latent_glucose += gp.glucose_amount;
-						//this.player.health += gp.health_amount;
-						self.player.fed += gp.feed_amount;
-						if (self.player.fed > self.player.fed_max) {
-							self.player.fed = self.player.fed_max;
-						}
-				
-						self.glucose_pickups.splice(i, 1);
-						self.cGrid.remove(gp);
-						return;
-					}
-					stepper = stepper.next;
-				}
-			})
-			/*if (this.player.bb.touching(gp.bb)) {
+			
+			if (this.player.bb.touching(gp.bb)) {
 				this.player.latent_glucose += gp.glucose_amount;
 				//this.player.health += gp.health_amount;
 				this.player.fed += gp.feed_amount;
@@ -177,33 +195,18 @@ Game.prototype = {
 				
 				this.glucose_pickups.splice(i, 1);
 				i--;
-			}*/
+			}
 		}
 		
 		for (var i = 0; i < this.insulin_pickups.length; i++) {
 			
 			var ip = this.insulin_pickups[i];
-			ip.cells.forEach( function(cell, index, arr) {
-				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data === self.player && self.player.bb.touching(ip.bb))
-					{
-						self.player.syringes += 1;
-				
-						self.insulin_pickups.splice(i, 1);
-						i--;
-						return;
-					}
-					stepper = stepper.next;
-				}
-			})
-			/*if (this.player.bb.touching(ip.bb)) {
+			if (this.player.bb.touching(ip.bb)) {
 				this.player.syringes += 1;
 				
 				this.insulin_pickups.splice(i, 1);
 				i--;
-			}*/
+			}
 		}
 	},
 	
@@ -223,6 +226,10 @@ Game.prototype = {
 		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].render(this.screenContext);
+		}
+		
+		for (var i = 0; i < this.carparts.length; i++) {
+			this.carparts[i].render(this.screenContext);
 		}
 		
 		this.player.render(this.screenContext);
@@ -266,6 +273,20 @@ Game.prototype = {
 			}
 			this.textbox.write(this.screenContext, 'you lost.', 100, 170, 32);
 			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 208, 24);
+		} else if (this.game_state == 'won') {
+			
+			if (this.do_darken) {
+				this.screenContext.save();
+				this.screenContext.beginPath();
+				this.screenContext.rect(0, 0, WIDTH, HEIGHT);
+				this.screenContext.fillStyle = '#000000';
+				this.screenContext.globalAlpha = 0.5;
+				this.screenContext.fill();
+				this.screenContext.restore();
+				this.do_darken = false;
+			}
+			this.textbox.write(this.screenContext, 'you won!', 100, 170, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 208, 24);
 		}
 		
 		window.requestAnimationFrame(
