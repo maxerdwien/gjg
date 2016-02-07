@@ -61,6 +61,8 @@ var Game = function() {
 	this.player = new Player(this.cGrid);
 	this.cGrid.add(this.player);
 	
+	this.walls = this.tilemap.initwalls(this.cGrid);
+	
 	this.vampires = [];
 	
 	this.glucose_pickups = [];
@@ -92,6 +94,18 @@ Game.prototype = {
 			this.game_state = 'lost';
 		}
 		this.player.update(elapsedTime);
+		
+		this.player.cells.forEach( function(cell, index, arr) {
+			var stepper = cell.first.next;
+			while(stepper != 0)
+				{
+					if(stepper.data instanceof Wall && self.player.bb.touching(stepper.data.bb))
+					{
+						self.player.bb.wallcollide(stepper.data);
+					}
+					stepper = stepper.next;
+				}
+		})
 		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
