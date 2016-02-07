@@ -5,8 +5,8 @@ var HEIGHT;
 var gx = 0;
 var gy = 0;
 
-var world_width = 10000;
-var world_height = 10000;
+var world_width = 2000;
+var world_height = 2000;
 
 // Resources
 Resource = {
@@ -19,6 +19,8 @@ Resource = {
 		vampire: new Image(),
 		
 		alphabet: new Image(),
+		
+		car_door: new Image(),
 	},
 }
 
@@ -30,6 +32,8 @@ Resource.Image.fastfood.src = 'Images/fastfood.gif';
 Resource.Image.vampire.src = 'Images/vampire.png';
 
 Resource.Image.alphabet.src = 'Images/alphabet.png';
+
+Resource.Image.car_door.src = 'cardoor.png';
 
 
 var Game = function() {
@@ -65,22 +69,42 @@ var Game = function() {
 	
 	this.insulin_pickups = [];
 	
-	for (var i = 0; i < 500; i++) {
+	this.carparts = [];
+	
+	for (var i = 0; i < 20; i++) {
 		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.random() * 2, Math.random() * 2));
 		this.cGrid.add(this.vampires[i]);
 	}
-	for (var i = 0; i < 500; i++) {
+	for (var i = 0; i < 50; i++) {
 		this.glucose_pickups.push(new GlucosePickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
-	for (var i = 0; i < 500; i++) {
+	for (var i = 0; i < 50; i++) {
 		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.insulin_pickups[i]);
 	}
 	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'car door', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'wheel', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'engine', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
+	var newcar = new CarPart(Math.random()*(world_width-10), Math.random()*(world_height-10), 'key', Resource.Image.car_door);
+	this.carparts.push(newcar);
+	this.cGrid.add(newcar);
+	
 	this.textbox = new Textbox();
 	
 	this.do_darken = true;
+	
+	this.car_parts_found = 0;
 }
 
 Game.prototype = {
@@ -90,6 +114,18 @@ Game.prototype = {
 			this.game_state = 'lost';
 		}
 		this.player.update(elapsedTime);
+		
+		for (var i = 0; i < this.carparts.length; i++) {
+			this.carparts[i].update(elapsedTime);
+			if (this.carparts[i].bb.touching(this.player.bb) && !this.carparts[i].picked_up) {
+				this.carparts[i].picked_up = true;
+				this.car_parts_found++;
+				if (this.car_parts_found == 4) {
+					this.game_state = 'won';
+				}
+				break;
+			}
+		}
 		
 		for (var i = 0; i < this.vampires.length; i++) {
 			this.vampires[i].update(elapsedTime);
@@ -208,6 +244,10 @@ Game.prototype = {
 			this.vampires[i].render(this.screenContext);
 		}
 		
+		for (var i = 0; i < this.carparts.length; i++) {
+			this.carparts[i].render(this.screenContext);
+		}
+		
 		this.player.render(this.screenContext);
 	},
 	
@@ -249,6 +289,20 @@ Game.prototype = {
 			}
 			this.textbox.write(this.screenContext, 'you lost.', 100, 170, 32);
 			this.textbox.write(this.screenContext, 'the vampires will gnaw your corpse\nforever.', 100, 208, 24);
+		} else if (this.game_state == 'won') {
+			
+			if (this.do_darken) {
+				this.screenContext.save();
+				this.screenContext.beginPath();
+				this.screenContext.rect(0, 0, WIDTH, HEIGHT);
+				this.screenContext.fillStyle = '#000000';
+				this.screenContext.globalAlpha = 0.5;
+				this.screenContext.fill();
+				this.screenContext.restore();
+				this.do_darken = false;
+			}
+			this.textbox.write(this.screenContext, 'you won!', 100, 170, 32);
+			this.textbox.write(this.screenContext, 'the vampires will gnaw on their\nown fingers in frustration.', 100, 208, 24);
 		}
 		
 		window.requestAnimationFrame(
