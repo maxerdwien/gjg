@@ -2,6 +2,8 @@ var TextTrigger = function(x, y, sprite, state) {
 	this.bb = new BoundingBox(x, y, 64, 64);
 	
 	this.trigger_state = state;
+	
+	this.triggered = false;
 }
 
 TextTrigger.prototype = {
