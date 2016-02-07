@@ -10,7 +10,10 @@ var Vampire = function(x, y, grid, can_shoot, can_charge) {
 	
 	this.glucose_amount = 10;
 	
-	this.aggro_radius = 300;
+	this.aggro_radius = 450;
+	if (!can_shoot && !can_charge) {
+		this.aggro_radius += 150;
+	}
 	
 	this.aggro = false;
 	
@@ -41,7 +44,18 @@ Vampire.prototype = {
 		if (this.aggro) {
 			pose += 3;
 		}
-		ctx.drawImage(Resource.Image.vampire, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		if (this.can_shoot && this.can_charge) {
+			ctx.drawImage(Resource.Image.vampire_purple, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		}
+		if (!this.can_shoot && this.can_charge) {
+			ctx.drawImage(Resource.Image.vampire_blue, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		}
+		if (this.can_shoot && !this.can_charge) {
+			ctx.drawImage(Resource.Image.vampire_red, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		}
+		if (!this.can_shoot && !this.can_charge) {
+			ctx.drawImage(Resource.Image.vampire, pose*32, 0, 32, 32, this.bb.x - gx, this.bb.y - gy, 64, 64);
+		}
 		
 		// render aggro range for playtesting
 		//ctx.beginPath();

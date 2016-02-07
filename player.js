@@ -12,7 +12,7 @@ var Player = function(grid) {
 	this.min_glucose = 80;
 	this.max_glucose = 130;
 	
-	this.glucose = 105;
+	this.glucose = 99;
 	
 	this.latent_glucose = 0;
 	this.max_absorption_per_second = 7;
@@ -22,8 +22,8 @@ var Player = function(grid) {
 	
 	this.health = 5;
 	
-	this.fed_max = 100;
-	this.fed_reset_level = 30;
+	this.fed_max = 150;
+	this.fed_reset_level = 40;
 	this.fed = this.fed_max;
 	
 	this.syringes = 0;
@@ -72,8 +72,6 @@ var Player = function(grid) {
 
 Player.prototype = {
 	render: function(ctx) {
-		
-		//console.log(this.bb.x, this.bb.y);
 		
 		for (var i = 0; i < this.needles.length; i++) {
 			this.needles[i].render(ctx);

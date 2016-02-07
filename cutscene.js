@@ -32,7 +32,7 @@ Cutscene.prototype = {
 			case 3:
 				context.fillStyle="white";
 				context.fillRect(0, 500, WIDTH, HEIGHT);
-				game.textbox.write(context, 'i did it! suck it, vampires!', 10, 510, 32);
+				game.textbox.write(context, 'i did it!\ntime to drive out of here.\nsuck it, vampires!', 10, 510, 32);
 				break;
 				
 			case 4:

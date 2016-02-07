@@ -18,6 +18,9 @@ Resource = {
 		insulin_straight: new Image(),
 		fastfood: new Image(),
 		vampire: new Image(),
+		vampire_purple: new Image(),
+		vampire_red: new Image(),
+		vampire_blue: new Image(),
 		
 		alphabet: new Image(),
 		
@@ -48,6 +51,9 @@ Resource.Image.insulin_diag.src = 'Images/insulin-diag.png';
 Resource.Image.insulin_straight.src = 'Images/insulin-straight.png';
 Resource.Image.fastfood.src = 'Images/fastfood.gif';
 Resource.Image.vampire.src = 'Images/vampire.png';
+Resource.Image.vampire_purple.src = 'Images/vampire-purple.png';
+Resource.Image.vampire_red.src = 'Images/vampire-red.png';
+Resource.Image.vampire_blue.src = 'Images/vampire-blue.png';
 
 Resource.Image.alphabet.src = 'Images/alphabet.png';
 
@@ -108,18 +114,33 @@ var Game = function() {
 	
 	this.carparts = [];
 	
-	for (var i = 0; i < 100; i++) {
-		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.random() * 2, Math.random() * 2));
+	for (var i = 0; i < 200; i++) {
+		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.floor(Math.random() * 1.5), Math.floor(Math.random() * 1.5)));
 		this.cGrid.add(this.vampires[i]);
 	}
-	for (var i = 0; i < 100; i++) {
+	for (var i = 0; i < 375; i++) {
 		this.glucose_pickups.push(new GlucosePickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
-	for (var i = 0; i < 100; i++) {
+	for (var i = 0; i < 175; i++) {
 		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
 		this.cGrid.add(this.insulin_pickups[i]);
 	}
+	
+	
+	var gp = new GlucosePickup(7561, 1200.5);
+	this.glucose_pickups.push(gp);
+	this.cGrid.add(gp);
+	var gp = new GlucosePickup(7561, 1250.5);
+	this.glucose_pickups.push(gp);
+	this.cGrid.add(gp);
+	var gp = new GlucosePickup(7611, 1250.5);
+	this.glucose_pickups.push(gp);
+	this.cGrid.add(gp);
+	var gp = new GlucosePickup(7611, 1200.5);
+	this.glucose_pickups.push(gp);
+	this.cGrid.add(gp);
+	
 	var ip = new InsulinPickup(942, 9361);
 	this.insulin_pickups.push(ip);
 	this.cGrid.add(ip);
@@ -210,7 +231,7 @@ Game.prototype = {
 			}
 			
 			if (this.car_parts_found == 4) {
-				this.text_triggers = [];
+				this.text_triggers.splice(0, 1);
 				this.text_triggers.push(new TextTrigger(6095, 7395.5, Resource.Image.car, 3, 128));
 			}
 			
