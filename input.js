@@ -33,24 +33,28 @@ Input.prototype = {
 			case 97:
 				this.inputState.left = true;
 				this.inputState.right = false;
+				e.preventDefault();
 				break;
 			case 87: // w
 			case 38: // up
 			case 101:
 				this.inputState.up = true;
 				this.inputState.down = false;
+				e.preventDefault();
 				break;
 			case 68: // d
 			case 39: // right
 			case 99:
 				this.inputState.right = true;
 				this.inputState.left = false;
+				e.preventDefault();
 				break;
 			case 83: // s
 			case 40: // down
 			case 98:
 				this.inputState.down = true;
 				this.inputState.up = false;
+				e.preventDefault();
 				break;
 				
 			case 16:
@@ -61,6 +65,7 @@ Input.prototype = {
 			case 32:
 			case 13:
 				game.player.throw_syringe();
+				e.preventDefault();
 				break;
 		}
 		
@@ -69,6 +74,7 @@ Input.prototype = {
 				game.cutscene.count = game.cutscene.scene_lengths[game.cutscene.current_scene];
 			}
 		}
+		
 	},
 	
 	keyUp: function(e) {
@@ -77,23 +83,28 @@ Input.prototype = {
 			case 37: // left
 			case 97:
 				this.inputState.left = false;
+				e.preventDefault();
 				break;
 			case 87: // w
 			case 38: // up
 			case 101:
 				this.inputState.up = false;
+				e.preventDefault();
 				break;
 			case 68: // d
 			case 39: // right
 			case 99:
 				this.inputState.right = false;
+				e.preventDefault();
 				break;
 			case 83: // s
 			case 40: // down
 			case 98:
 				this.inputState.down = false;
+				e.preventDefault();
 				break;
 		}
+		e.preventDefault();
 	},
 	
 	mousemove: function(e) {
