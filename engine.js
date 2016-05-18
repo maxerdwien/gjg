@@ -75,6 +75,8 @@ Resource.Image.beach.src = 'Images/lifes a beach (2).png';
 Resource.Image.barn.src = 'Images/Barn.png';
 Resource.Image.graveyard.src = 'Images/graveyard 2.png';
 
+var reset_game = false;
+
 
 var Game = function() {
 	var self = this;
@@ -114,16 +116,42 @@ var Game = function() {
 	
 	this.carparts = [];
 	
+	var player_protection_radius = 100;
+	
 	for (var i = 0; i < 200; i++) {
-		this.vampires.push(new Vampire(Math.random()*(world_width-30), Math.random()*(world_height-30), this.cGrid, Math.floor(Math.random() * 1.5), Math.floor(Math.random() * 1.5)));
+		var x = Math.random()*(world_width-30);
+		var y = Math.random()*(world_height-30);
+		var dist = Math.sqrt(Math.pow(x-this.player.bb.x, 2) + Math.pow(y-this.player.bb.y, 2));
+		if (dist < 7*player_protection_radius) {
+			i--;
+			continue;
+		}
+		
+		this.vampires.push(new Vampire(x, y, this.cGrid, Math.floor(Math.random() * 1.5), Math.floor(Math.random() * 1.5)));
 		this.cGrid.add(this.vampires[i]);
 	}
 	for (var i = 0; i < 375; i++) {
-		this.glucose_pickups.push(new GlucosePickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
+		var x = Math.random()*(world_width-30);
+		var y = Math.random()*(world_height-30);
+		var dist = Math.sqrt(Math.pow(x-this.player.bb.x, 2) + Math.pow(y-this.player.bb.y, 2));
+		if (dist < player_protection_radius) {
+			i--;
+			continue;
+		}
+		
+		this.glucose_pickups.push(new GlucosePickup(x, y));
 		this.cGrid.add(this.glucose_pickups[i]);
 	}
 	for (var i = 0; i < 175; i++) {
-		this.insulin_pickups.push(new InsulinPickup(Math.random()*(world_width-10), Math.random()*(world_height-10)));
+		var x = Math.random()*(world_width-30);
+		var y = Math.random()*(world_height-30);
+		var dist = Math.sqrt(Math.pow(x-this.player.bb.x, 2) + Math.pow(y-this.player.bb.y, 2));
+		if (dist < player_protection_radius) {
+			i--;
+			continue;
+		}
+		
+		this.insulin_pickups.push(new InsulinPickup(x, y));
 		this.cGrid.add(this.insulin_pickups[i]);
 	}
 	
@@ -193,6 +221,7 @@ Game.prototype = {
 		if (this.game_state == 'normal') {
 			self = this;
 			if (this.player.health <= 0) {
+				//reset_game = false;
 				this.game_state = 'lost';
 			}
 			this.player.update(elapsedTime);
@@ -200,10 +229,8 @@ Game.prototype = {
 
 			this.player.cells.forEach( function(cell, index, arr) {
 				var stepper = cell.first.next;
-				while(stepper != 0)
-				{
-					if(stepper.data instanceof Wall && self.player.bb.touching(stepper.data.bb))
-					{
+				while (stepper != 0) {
+					if (stepper.data instanceof Wall && self.player.bb.touching(stepper.data.bb)) {
 						self.player.bb.wallcollide(stepper.data);
 					}
 					stepper = stepper.next;
@@ -304,7 +331,7 @@ Game.prototype = {
 	},
 	
 	render: function() {
-		if (this.game_state == 'normal') {
+		if (this.game_state == 'normal' || this.game_state == 'cutscene') {
 			this.screenContext.clearRect(0, 0, WIDTH, HEIGHT);
 			
 			this.tilemap.render(this.screenContext);
@@ -331,6 +358,10 @@ Game.prototype = {
 			}
 			
 			this.player.render(this.screenContext);
+			
+			if (this.game_state == 'cutscene') {
+				this.cutscene.render(this.screenContext);
+			}
 		}
 		else if (this.game_state == 'lost') {
 			
@@ -365,14 +396,11 @@ Game.prototype = {
 			this.textbox.write(this.screenContext, 'you won!', 100, 520, 32);
 			this.textbox.write(this.screenContext, 'that will be the last time that you follow\nhighway billboards offering\n"free forest hamburgers".', 100, 560, 24);
 		}
-		else if (this.game_state == 'cutscene') {
-			this.cutscene.render(this.screenContext);
-		}
 		
 		this.frame++;
-		if (this.frame == 10) {
+		if (this.frame == 1) {
 			this.game_state = 'cutscene';
-			this.cutscene.current_scene = 6;
+			this.cutscene.current_scene = 5;
 		}
 	},
 	
@@ -397,6 +425,12 @@ Game.prototype = {
 		
 		self.update(elapsedTime);
 		self.render();
+		
+		if (reset_game) {
+			console.log("RESETTING GAME");
+			game = new Game();
+			reset_game = false;
+		}
 		
 		window.requestAnimationFrame(
 			function(time) {

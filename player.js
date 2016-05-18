@@ -18,6 +18,7 @@ var Player = function(grid) {
 	this.max_absorption_per_second = 7;
 	
 	this.max_timer = 5000;
+	this.leeway_timer = 3000;
 	this.timer = 0;
 	
 	this.health = 5;
@@ -26,10 +27,10 @@ var Player = function(grid) {
 	this.fed_reset_level = 40;
 	this.fed = this.fed_max;
 	
-	this.syringes = 0;
+	this.syringes = 2;
 	
-	this.bar_flash_max_1 = 1200;
-	this.bar_flash_max_2 = 500;
+	this.bar_flash_max_1 = 700;
+	this.bar_flash_max_2 = 300;
 	this.bar_flash = this.bar_flash_max_1;
 	
 	this.alarm_bar_state = 0;
@@ -109,7 +110,6 @@ Player.prototype = {
 					ctx.font = '20px Georgia';
 					ctx.fillStyle = 'black';
 					if (this.glucose < this.min_glucose) {
-						//ctx.fillText('hypoglycemic!', 10, 150);
 						game.textbox.write(ctx, 'hypoglycemic! eat something!', 10, 140, 24);
 					} else {
 						game.textbox.write(ctx, 'hyperglycemic! take your insulin!', 10, 140, 24);
@@ -248,9 +248,9 @@ Player.prototype = {
 				}
 				this.timer = this.max_timer;
 			}
-		}
-		if (this.timer > 0) {
 			this.timer -= et;
+		} else {
+			this.timer = this.leeway_timer;
 		}
 		
 		
@@ -297,12 +297,12 @@ Player.prototype = {
 			this.current_pose = 0;
 		}
 		
-		//stop the player from going out of bounds
+		// stop the player from going out of bounds
 		this.bb.x = this.clamp(this.bb.x, 0, world_width);
 		this.bb.y = this.clamp(this.bb.y, 0, world_height);
 		
 		gx = this.bb.x + this.bb.width/2 - WIDTH/2;
-		gy = this.bb.y + this.bb.height/2 - HEIGHT/2;
+		gy = this.bb.y + this.bb.height/2 - HEIGHT/2 - 35;
 		
 		
 		if(Math.floor(this.bb.lastx) != Math.floor(this.bb.x) || Math.floor(this.bb.lasty) != Math.floor(this.bb.y))

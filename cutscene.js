@@ -3,8 +3,8 @@ var Cutscene = function()
 	this.current_scene = 0;
 	this.count = 0;
 	
-	this.scene_lengths = [2000, 2000, 2000, 4000, 2000, 999999, 999999, 999999, 999999, 3000];
-	this.scene_modes = ['cutscene', 'normal', 'normal', 'won', 'normal', 'cutscene', 'cutscene', 'cutscene', 'cutscene', 'normal'];
+	this.scene_lengths = [2000, 2000, 2000, 4000, 2000, 999999, 999999, 999999, 999999, 999999, 4000];
+	this.scene_modes = ['cutscene', 'normal', 'normal', 'won', 'normal', 'cutscene', 'cutscene', 'cutscene', 'cutscene', 'cutscene', 'normal'];
 }
 
 Cutscene.prototype = {
@@ -44,27 +44,32 @@ Cutscene.prototype = {
 			case 5:
 				context.fillStyle="white";
 				context.fillRect(0, 500, WIDTH, HEIGHT);
-				game.textbox.write(context, 'green bar is your glucose\ndo not let it get above or\nbelow the orange marks!', 10, 510, 32);
+				game.textbox.write(context, 'welcome to sam v vamp.\npress any key to continue.', 10, 510, 32);
 				break;
 			case 6:
 				context.fillStyle="white";
 				context.fillRect(0, 500, WIDTH, HEIGHT);
-				game.textbox.write(context, 'purple bar represents fullness.\neat food to restore it.\nfood also increases glucose.', 10, 510, 32);
+				game.textbox.write(context, 'the green bar is your glucose\ndo not let it go above or\nbelow the orange marks!', 10, 510, 32);
 				break;
 			case 7:
 				context.fillStyle="white";
 				context.fillRect(0, 500, WIDTH, HEIGHT);
-				game.textbox.write(context, 'health and insulin inventory\nare below the fullness bar.', 10, 510, 32);
+				game.textbox.write(context, 'the purple bar represents fullness.\neat hamburgers to restore it.\nhamburgers also increase glucose.', 10, 510, 32);
 				break;
 			case 8:
 				context.fillStyle="white";
 				context.fillRect(0, 500, WIDTH, HEIGHT);
-				game.textbox.write(context, 'move with wasd or arrow keys.\npress shift to use insulin and\nreduce your glucose.\npress enter to throw insulin in the\ndirection you are moving.', 10, 510, 32);
+				game.textbox.write(context, 'health and insulin inventory\nare below the fullness bar.', 10, 510, 32);
 				break;
 			case 9:
 				context.fillStyle="white";
 				context.fillRect(0, 500, WIDTH, HEIGHT);
-				game.textbox.write(context, 'oh, and avoid the vampires.\ngood luck!', 10, 510, 32);
+				game.textbox.write(context, 'move with wasd or arrow keys.\npress shift to use insulin and\nreduce your glucose.\npress spacebar to throw insulin in the\ndirection you are moving.', 10, 510, 32);
+				break;
+			case 10:
+				context.fillStyle="white";
+				context.fillRect(0, 500, WIDTH, HEIGHT);
+				game.textbox.write(context, 'oh, and watch out for the vampires.\nexit to the south when ready.\ngood luck!', 10, 510, 32);
 				break;
 		}
 	},
